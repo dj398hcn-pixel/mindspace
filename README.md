@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Moodkins Sanctuary</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #F4F1DE;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 { color: #5C6B73; }
+    .question { font-size: 20px; font-weight: bold; color: #5C6B73; margin: 20px 0; }
+    .option {
+      display: block;
+      margin: 10px auto;
+      padding: 12px;
+      width: 80%;
+      background: white;
+      border: 2px solid #D8E2DC;
+      border-radius: 15px;
+      cursor: pointer;
+      color: #6D6875;
+      font-size: 14px;
+    }
+    .result { font-size: 18px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <h1>✨ Moodkins Sanctuary ✨</h1>
+  <div id="quiz"></div>
+
+  <script>
+    const questions = [
+      { text: "If you were a potato today, how would you be cooked?",
+        options: ["Mashed (Soft & Mushy)", "Fried (Salty & Sharp)", "Baked (Hot & Tired)", "Raw (I need help)"],
+        weights: [0,1,2,6] },
+      { text: "Your social battery is currently at:",
+        options: ["100% - Let's party!", "15% - Low power mode.", "0% - I am a ghost.", "Wait, I have a battery?"],
+        weights: [3,9,6,8] }
+      // 👉 Add more questions here
+    ];
+
+    const moods = [
+      {icon:"🍡", title:"Cozy Marshmallow", msg:"You are feeling soft, safe, and sweet."},
+      {icon:"🌮", title:"Spicy Taco", msg:"You've got a bit of a kick today!"},
+      {icon:"🍂", title:"Wilting Leaf", msg:"You feel a bit fragile and drained."},
+      {icon:"🦄", title:"Sparkly Unicorn", msg:"Energy levels are high!"},
+      {icon:"☁️", title:"Floating Cloud", msg:"You are drifting in a dream."},
+      {icon:"🐝", title:"Busy Bee", msg:"Buzzing with thoughts!"},
+      {icon:"🥔", title:"Grumpy Potato", msg:"You just want to stay under the blanket."},
+      {icon:"🦉", title:"Wise Owl", msg:"You are pensive and calm."},
+      {icon:"🧩", title:"Scattered Puzzle", msg:"You feel in pieces, but you’ll be whole again."},
+      {icon:"☀️", title:"Golden Sun", msg:"Radiant and content!"}
+    ];
+
+    let current = 0;
+    let scores = Array(10).fill(0);
+
+    function showQuestion() {
+      const q = questions[current];
+      const quizDiv = document.getElementById("quiz");
+      quizDiv.innerHTML = `<div class="question">${q.text}</div>`;
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.textContent = opt;
+        btn.onclick = () => {
+          scores[q.weights[i]]++;
+          current++;
+          if (current < questions.length) showQuestion();
+          else showResult();
+        };
+        quizDiv.appendChild(btn);
+      });
+    }
+
+    function showResult() {
+      const maxIdx = scores.indexOf(Math.max(...scores));
+      const mood = moods[maxIdx];
+      document.getElementById("quiz").innerHTML =
+        `<div class="result">${mood.icon}<br><strong>Your heart is a ${mood.title}</strong><br>${mood.msg}</div>`;
+    }
+
+    // Start quiz
+    showQuestion();
+  </script>
+</body>
+</html>
