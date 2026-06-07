@@ -146,7 +146,7 @@
             margin-bottom: 8px;
             text-align: center;
         }
-        .mood-row {
+.mood-row {
             display: flex;
             justify-content: space-between;
             background-color: var(--card-white);
@@ -287,7 +287,7 @@
             outline: none;
             margin-top: 6px;
         }
-        textarea { height: 70px; resize: none; }
+textarea { height: 70px; resize: none; }
 
         .toast {
             position: absolute;
@@ -376,7 +376,93 @@
 
             <div style="margin-bottom: 14px; margin-top:10px;">
                 <label style="font-size:14px; font-weight:500;">Feedback & Suggestions</label>
-                function interactWithPet() {
+<textarea id="feedback-text" placeholder="Encountered bugs or have suggestions? Let us know!"></textarea>
+                <button class="btn-custom" style="width:100%; margin-top:8px;" onclick="submitFeedback()">Submit Feedback</button>
+            </div>
+        </div>
+
+        <!-- Linear Bottom Tab Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-btn" id="nav-chat" onclick="switchTab('chat')">
+                <span>💬</span>Chat
+            </button>
+            <button class="nav-btn active" id="nav-pet" onclick="switchTab('pet')">
+                <span>🐾</span>Pet
+            </button>
+            <button class="nav-btn" id="nav-settings" onclick="switchTab('settings')">
+                <span>⚙️</span>Settings
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        // Virtual Pet Engine Initialization Constants
+        const petPool = [
+            { icon: '🐱', name: 'Cute Kitten' },
+            { icon: '🦖', name: 'Cute Dinosaur' },
+            { icon: '🐹', name: 'Cute Capybara' },
+            { icon: '🐨', name: 'Cute Koala' }
+        ];
+
+        const moodStatements = [
+            "I'm feeling incredibly happy and bouncy today!",
+            "Yawn... I feel a bit sleepy. Can we take a nap?",
+            "My tummy is rumbling! Is it snack time yet?",
+            "I'm feeling very curious! Let's explore!"
+        ];
+
+        let activePet = {};
+
+        // Randomly roll configurations on boot
+        function initApp() {
+            const randomIndex = Math.floor(Math.random() * petPool.length);
+            activePet = petPool[randomIndex];
+            document.getElementById('pet-graphic').innerText = activePet.icon;
+            document.getElementById('pet-dialogue').innerText = Hi there! I am your ${activePet.name}! ✨;
+        }
+
+        // Tab View Router Engine
+        function switchTab(targetTab) {
+            document.querySelectorAll('.screen-content').forEach(screen => screen.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(screen-${targetTab}).classList.add('active');
+            document.getElementById(nav-${targetTab}).classList.add('active');
+        }
+
+        // Screen 1: Chat Prompt Handling
+        function sendChatMessage() {
+            const inputField = document.getElementById('chat-input');
+            const chatBox = document.getElementById('chat-box');
+            const rawMessage = inputField.value.trim();
+
+            if (!rawMessage) return;
+
+            // Render user line
+            chatBox.innerHTML += <div class="chat-msg"><span class="msg-user">You:</span> ${rawMessage}</div>;
+            inputField.value = '';
+
+            // Handle Context Processing Response Mockup
+            setTimeout(() => {
+                const standardizedText = rawMessage.toLowerCase();
+                let reply = "";
+                
+                if (standardizedText.includes('image')  standardizedText.includes('generate')  standardizedText.includes('draw')) {
+                    reply = <span class="msg-ai">Gemini 3.5 Flash:</span> Here is your generated creation based on your prompt! 🎨<br><span style="font-size:40px; display:block; text-align:center; margin-top:8px;">🌌🌈✨</span>;
+                } else {
+                    reply = <span class="msg-ai">Gemini 3.5 Flash:</span> (Auto-Reply) I evaluated your message contextually and am responding immediately with high efficiency!;
+                }
+
+                chatBox.innerHTML += <div class="chat-msg">${reply}</div>;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 750);
+        }
+
+        // Screen 2: Interaction Engines
+        function logUserMood(moodName) {
+            showToast(Your ${activePet.name} noticed you feel ${moodName}!);
+        }
+function interactWithPet() {
             const dialogBox = document.getElementById('pet-dialogue');
             const giftArea = document.getElementById('gift-area');
             giftArea.innerHTML = ''; // Reset any uncollected assets
