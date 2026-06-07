@@ -19,21 +19,15 @@ body{
   max-width:480px;margin:0 auto;position:relative;
   display:flex;flex-direction:column;
 }
-
-/* blobs */
 .blobs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.2;animation:bf 8s ease-in-out infinite alternate}
 .b1{width:260px;height:260px;background:#b07af5;top:-60px;left:-80px}
 .b2{width:200px;height:200px;background:#ff8fc8;top:30%;right:-60px;animation-delay:2s}
 .b3{width:180px;height:180px;background:#ffd166;bottom:20%;left:-40px;animation-delay:4s}
 @keyframes bf{0%{transform:translate(0,0) scale(1)}100%{transform:translate(20px,30px) scale(1.08)}}
-
-/* layout */
 #app{position:relative;z-index:1;display:flex;flex-direction:column;height:100%}
 .page{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
 .page.active{display:flex}
-
-/* NAV — always visible at bottom */
 nav{
   position:relative;z-index:100;
   height:var(--nav);min-height:var(--nav);flex-shrink:0;
@@ -55,8 +49,6 @@ nav{
   content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);
   width:6px;height:6px;border-radius:50%;background:var(--accent);
 }
-
-/* ===================== CHAT ===================== */
 .chat-hd{
   padding:50px 16px 12px;
   background:linear-gradient(160deg,#f5eeff,#fff0fa);
@@ -76,7 +68,6 @@ nav{
 }
 .chat-hd-info p{font-size:11px;color:var(--muted)}
 .odot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4cde80;margin-right:4px;box-shadow:0 0 0 2px #d4fbe5}
-
 .chat-msgs{
   flex:1;overflow-y:auto;padding:14px 14px 6px;
   display:flex;flex-direction:column;gap:12px;min-height:0;
@@ -97,7 +88,6 @@ nav{
 .td{width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:.5;animation:tb 1.2s ease-in-out infinite}
 .td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
 @keyframes tb{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-6px);opacity:1}}
-
 .chat-in-area{
   padding:10px 12px 12px;flex-shrink:0;
   background:rgba(255,255,255,.92);backdrop-filter:blur(12px);
@@ -120,8 +110,6 @@ nav{
 }
 .sbtn:active{transform:scale(.93)}
 .sbtn:disabled{opacity:.5;cursor:not-allowed}
-
-/* ===================== PET ===================== */
 #page-pet{overflow-y:auto}
 .mood-bar{
   padding:14px 12px 10px;flex-shrink:0;
@@ -139,7 +127,6 @@ nav{
 .ec:hover{border-color:var(--accent);transform:translateY(-2px)}
 .ec.sel{border-color:var(--accent);background:#f5eeff;box-shadow:0 2px 10px rgba(176,122,245,.2)}
 .ec span:first-child{font-size:20px}.ec span:last-child{font-size:9px;font-weight:700;color:var(--muted)}
-
 .pet-stage{
   display:flex;flex-direction:column;align-items:center;
   padding:18px 16px;gap:14px;
@@ -193,8 +180,6 @@ nav{
 .stat{text-align:center}
 .sl{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;text-transform:uppercase}
 .sv{font-size:20px}
-
-/* ===================== SETTINGS ===================== */
 #page-settings{overflow-y:auto}
 .sc{padding:54px 14px 20px;display:flex;flex-direction:column;gap:12px}
 .ss{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
@@ -220,8 +205,6 @@ nav{
 .star.lit{filter:none}
 .star:hover{transform:scale(1.2)}
 .vt{text-align:center;font-size:12px;color:var(--muted);padding:8px;letter-spacing:.5px}
-
-/* toast */
 .toast{
   position:fixed;top:56px;left:50%;transform:translateX(-50%) translateY(-16px);
   background:var(--text);color:#fff;padding:9px 18px;
@@ -236,29 +219,28 @@ nav{
 </head>
 <body>
 <div class="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
-
 <div id="app">
 
-<!-- ===== CHAT ===== -->
+<!-- CHAT -->
 <div id="page-chat" class="page active">
   <div class="chat-hd">
     <div class="chat-av">🤖</div>
     <div class="chat-hd-info">
       <h2>PetPal AI</h2>
-      <p><span class="odot"></span>Your friendly companion · always here</p>
+      <p><span class="odot"></span><span data-t="chatSub">Your friendly companion · always here</span></p>
     </div>
   </div>
   <div class="chat-msgs" id="chatMsgs"></div>
   <div class="chat-in-area">
-    <textarea class="ci" id="ci" placeholder="Say something…" rows="1" oninput="ar(this)" onkeydown="hk(event)"></textarea>
+    <textarea class="ci" id="ci" data-placeholder="chatPlaceholder" rows="1" oninput="ar(this)" onkeydown="hk(event)"></textarea>
     <button class="sbtn" id="sbtn" onclick="send()">➤</button>
   </div>
 </div>
 
-<!-- ===== PET ===== -->
+<!-- PET -->
 <div id="page-pet" class="page">
   <div class="mood-bar">
-    <h3>HOW ARE YOU FEELING TODAY?</h3>
+    <h3 id="moodTitle" data-t="moodTitle">HOW ARE YOU FEELING TODAY?</h3>
     <div class="erow" id="erow"></div>
   </div>
   <div class="pet-stage">
@@ -269,54 +251,52 @@ nav{
         <div class="flower" id="flw" style="display:none" onclick="acceptFlower()"></div>
       </div>
     </div>
-    <div class="sbubble" id="sbubble"><span id="stext">Hello! Tap me or use the buttons 🌟</span></div>
+    <div class="sbubble" id="sbubble"><span id="stext"></span></div>
     <div class="pacts">
-      <button class="pab" onclick="pa('pet')">🤗 Pet</button>
-      <button class="pab" onclick="pa('feed')">🍬 Feed</button>
-      <button class="pab" onclick="pa('play')">🎾 Play</button>
-      <button class="pab" onclick="pa('mood')">💬 Mood</button>
-      <button class="pab" onclick="trigFlower()">🌸 Gift</button>
+      <button class="pab" onclick="pa('pet')">🤗 <span data-t="actPet">Pet</span></button>
+      <button class="pab" onclick="pa('feed')">🍬 <span data-t="actFeed">Feed</span></button>
+      <button class="pab" onclick="pa('play')">🎾 <span data-t="actPlay">Play</span></button>
+      <button class="pab" onclick="pa('mood')">💬 <span data-t="actMood">Mood</span></button>
+      <button class="pab" onclick="trigFlower()">🌸 <span data-t="actGift">Gift</span></button>
     </div>
     <div class="pstats">
-      <div class="stat"><div class="sl">Happiness</div><div class="sv" id="sH">😊</div></div>
-      <div class="stat"><div class="sl">Energy</div><div class="sv" id="sE">⚡</div></div>
-      <div class="stat"><div class="sl">Love</div><div class="sv" id="sL">💖</div></div>
+      <div class="stat"><div class="sl" data-t="statHappy">Happiness</div><div class="sv" id="sH">😊</div></div>
+      <div class="stat"><div class="sl" data-t="statEnergy">Energy</div><div class="sv" id="sE">⚡</div></div>
+      <div class="stat"><div class="sl" data-t="statLove">Love</div><div class="sv" id="sL">💖</div></div>
     </div>
   </div>
 </div>
 
-<!-- ===== SETTINGS ===== -->
+<!-- SETTINGS -->
 <div id="page-settings" class="page">
   <div class="sc">
     <div style="text-align:center;padding:0 0 4px">
       <div style="font-size:36px">⚙️</div>
-      <div style="font-family:'Baloo 2',cursive;font-size:21px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Settings</div>
+      <div style="font-family:'Baloo 2',cursive;font-size:21px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent" data-t="settingsTitle">Settings</div>
     </div>
-
     <div class="ss">
-      <div class="sst">🎵 Sound</div>
+      <div class="sst" data-t="secSound">🎵 Sound</div>
       <div class="sr">
-        <div class="srl"><div class="sri">🔊</div><div><div class="srlb">Sound Effects</div><div class="srsb">Pet interactions</div></div></div>
-        <button class="toggle on" onclick="tog(this,'sfx')"></button>
+        <div class="srl"><div class="sri">🔊</div><div><div class="srlb" data-t="sfxLabel">Sound Effects</div><div class="srsb" data-t="sfxSub">Pet interactions</div></div></div>
+        <button class="toggle on" id="sfxToggle" onclick="tog(this,'sfx')"></button>
       </div>
       <div class="sr">
-        <div class="srl"><div class="sri">🎶</div><div><div class="srlb">Background Music</div><div class="srsb">Ambient tunes</div></div></div>
-        <button class="toggle" onclick="tog(this,'bgm')"></button>
+        <div class="srl"><div class="sri">🎶</div><div><div class="srlb" data-t="bgmLabel">Background Music</div><div class="srsb" data-t="bgmSub">Ambient tunes</div></div></div>
+        <button class="toggle" id="bgmToggle" onclick="tog(this,'bgm')"></button>
       </div>
       <div class="sr">
-        <div class="srl"><div class="sri">🔈</div><div><div class="srlb">Volume</div></div></div>
+        <div class="srl"><div class="sri">🔈</div><div><div class="srlb" data-t="volLabel">Volume</div></div></div>
         <div style="display:flex;align-items:center;gap:8px">
-          <input type="range" class="vsl" min="0" max="100" value="70" oninput="document.getElementById('vv').textContent=this.value+'%'">
+          <input type="range" class="vsl" id="volSlider" min="0" max="100" value="70" oninput="setVol(this.value)">
           <span id="vv" style="font-size:11px;font-weight:700;color:var(--muted);min-width:30px">70%</span>
         </div>
       </div>
     </div>
-
     <div class="ss">
-      <div class="sst">🌐 Language</div>
+      <div class="sst" data-t="secLang">🌐 Language</div>
       <div class="sr">
-        <div class="srl"><div class="sri">🗣️</div><div><div class="srlb">App Language</div><div class="srsb">Chat & UI</div></div></div>
-        <select class="ssel" onchange="chLang(this.value)">
+        <div class="srl"><div class="sri">🗣️</div><div><div class="srlb" data-t="langLabel">App Language</div><div class="srsb" data-t="langSub">Chat & UI</div></div></div>
+        <select class="ssel" id="langSel" onchange="chLang(this.value)">
           <option value="en">🇬🇧 English</option>
           <option value="zh">🇨🇳 中文</option>
           <option value="ms">🇲🇾 Bahasa Melayu</option>
@@ -325,86 +305,435 @@ nav{
         </select>
       </div>
       <div class="sr">
-        <div class="srl"><div class="sri">🌙</div><div><div class="srlb">Dark Mode</div><div class="srsb">Easy on the eyes</div></div></div>
+        <div class="srl"><div class="sri">🌙</div><div><div class="srlb" data-t="darkLabel">Dark Mode</div><div class="srsb" data-t="darkSub">Easy on the eyes</div></div></div>
         <button class="toggle" onclick="togDark(this)"></button>
       </div>
       <div class="sr">
-        <div class="srl"><div class="sri">🔔</div><div><div class="srlb">Notifications</div><div class="srsb">Daily check-in reminders</div></div></div>
+        <div class="srl"><div class="sri">🔔</div><div><div class="srlb" data-t="notifLabel">Notifications</div><div class="srsb" data-t="notifSub">Daily check-in reminders</div></div></div>
         <button class="toggle on" onclick="tog(this,'notif')"></button>
       </div>
     </div>
-
     <div class="ss">
-      <div class="sst">💌 Feedback</div>
+      <div class="sst" data-t="secFeedback">💌 Feedback</div>
       <div class="sr" style="flex-direction:column;align-items:flex-start;gap:10px">
-        <div style="font-size:12px;font-weight:700;color:var(--muted)">Rate your experience</div>
+        <div style="font-size:12px;font-weight:700;color:var(--muted)" data-t="rateLabel">Rate your experience</div>
         <div id="stars" style="display:flex;gap:4px">
-          <span class="star" onclick="rate(1)">⭐</span>
-          <span class="star" onclick="rate(2)">⭐</span>
-          <span class="star" onclick="rate(3)">⭐</span>
-          <span class="star" onclick="rate(4)">⭐</span>
+          <span class="star" onclick="rate(1)">⭐</span><span class="star" onclick="rate(2)">⭐</span>
+          <span class="star" onclick="rate(3)">⭐</span><span class="star" onclick="rate(4)">⭐</span>
           <span class="star" onclick="rate(5)">⭐</span>
         </div>
       </div>
       <div class="sr" style="flex-direction:column;align-items:flex-start;gap:8px">
-        <div style="font-size:12px;font-weight:700;color:var(--muted)">Send us your thoughts 💭</div>
-        <textarea class="fba" id="fbt" placeholder="What do you love? What can we improve?"></textarea>
-        <button class="fbs" onclick="subFb()">✉️ Send Feedback</button>
+        <div style="font-size:12px;font-weight:700;color:var(--muted)" data-t="fbLabel">Send us your thoughts 💭</div>
+        <textarea class="fba" id="fbt" data-placeholder="fbPlaceholder"></textarea>
+        <button class="fbs" onclick="subFb()" data-t="fbBtn">✉️ Send Feedback</button>
       </div>
     </div>
-
     <div class="vt">PetPal v1.0.0 · Made with 💜</div>
   </div>
 </div>
 
-<!-- NAV -->
 <nav>
-  <button class="nb active" id="nb-chat" onclick="sw('chat')"><span class="ni">💬</span>Chat</button>
-  <button class="nb" id="nb-pet" onclick="sw('pet')"><span class="ni">🐾</span>Pet</button>
-  <button class="nb" id="nb-settings" onclick="sw('settings')"><span class="ni">⚙️</span>Settings</button>
+  <button class="nb active" id="nb-chat" onclick="sw('chat')"><span class="ni">💬</span><span data-t="navChat">Chat</span></button>
+  <button class="nb" id="nb-pet" onclick="sw('pet')"><span class="ni">🐾</span><span data-t="navPet">Pet</span></button>
+  <button class="nb" id="nb-settings" onclick="sw('settings')"><span class="ni">⚙️</span><span data-t="navSettings">Settings</span></button>
 </nav>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
+/* ══════════════════════════════════
+   AUDIO ENGINE (Web Audio API)
+══════════════════════════════════ */
+let audioCtx = null;
+let bgmNode = null, bgmGain = null;
+let sfxEnabled = true, bgmEnabled = false;
+let masterVol = 0.7;
+
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// Cute beep SFX using oscillators
+function playSfx(type) {
+  if (!sfxEnabled) return;
+  try {
+    const ctx = getCtx();
+    const g = ctx.createGain();
+    g.connect(ctx.destination);
+    g.gain.setValueAtTime(masterVol * 0.3, ctx.currentTime);
+
+    const configs = {
+      pet:  [{f:520,t:0,d:.08},{f:660,t:.09,d:.1},{f:800,t:.2,d:.12}],
+      feed: [{f:440,t:0,d:.06},{f:550,t:.07,d:.06},{f:440,t:.14,d:.06},{f:660,t:.21,d:.1}],
+      play: [{f:600,t:0,d:.05},{f:800,t:.06,d:.05},{f:1000,t:.12,d:.05},{f:800,t:.18,d:.05},{f:1000,t:.24,d:.1}],
+      mood: [{f:340,t:0,d:.1},{f:420,t:.12,d:.1},{f:380,t:.25,d:.15}],
+      gift: [{f:523,t:0,d:.08},{f:659,t:.1,d:.08},{f:784,t:.2,d:.08},{f:1047,t:.32,d:.2}],
+      msg:  [{f:480,t:0,d:.06},{f:600,t:.08,d:.1}],
+      send: [{f:600,t:0,d:.05},{f:750,t:.07,d:.08}],
+      nav:  [{f:400,t:0,d:.05},{f:500,t:.06,d:.07}]
+    };
+
+    const notes = configs[type] || configs.msg;
+    notes.forEach(({f, t, d}) => {
+      const osc = ctx.createOscillator();
+      const ng = ctx.createGain();
+      osc.connect(ng); ng.connect(g);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(f, ctx.currentTime + t);
+      ng.gain.setValueAtTime(0.8, ctx.currentTime + t);
+      ng.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + d);
+      osc.start(ctx.currentTime + t);
+      osc.stop(ctx.currentTime + t + d + 0.05);
+    });
+  } catch(e) {}
+}
+
+// Gentle looping BGM (pentatonic melody)
+function startBgm() {
+  if (!bgmEnabled || bgmNode) return;
+  try {
+    const ctx = getCtx();
+    bgmGain = ctx.createGain();
+    bgmGain.gain.setValueAtTime(masterVol * 0.08, ctx.currentTime);
+    bgmGain.connect(ctx.destination);
+
+    // Melody notes (C pentatonic): C4 D E G A C5
+    const melody = [261,294,330,392,440,523,440,392,330,392,440,523,294,330,261,294];
+    const beatLen = 0.55;
+    let startT = ctx.currentTime + 0.1;
+
+    function scheduleMelody(loop) {
+      melody.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const env = ctx.createGain();
+        osc.connect(env); env.connect(bgmGain);
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        const t = startT + i * beatLen + loop * melody.length * beatLen;
+        env.gain.setValueAtTime(0, t);
+        env.gain.linearRampToValueAtTime(0.6, t + 0.05);
+        env.gain.setValueAtTime(0.6, t + beatLen * 0.6);
+        env.gain.linearRampToValueAtTime(0, t + beatLen * 0.95);
+        osc.start(t); osc.stop(t + beatLen);
+      });
+    }
+
+    // Schedule a few loops, then reschedule
+    for(let i = 0; i < 4; i++) scheduleMelody(i);
+    bgmNode = setInterval(() => {
+      if (!bgmEnabled) { stopBgm(); return; }
+      bgmGain.gain.setValueAtTime(masterVol * 0.08, ctx.currentTime);
+      for(let i = 0; i < 4; i++) scheduleMelody(i);
+      startT = ctx.currentTime + 0.1;
+    }, melody.length * beatLen * 4 * 1000 - 200);
+  } catch(e) {}
+}
+
+function stopBgm() {
+  if (bgmNode) { clearInterval(bgmNode); bgmNode = null; }
+  if (bgmGain) { try { bgmGain.disconnect(); } catch(e){} bgmGain = null; }
+}
+
+function setVol(v) {
+  masterVol = v / 100;
+  document.getElementById('vv').textContent = v + '%';
+  if (bgmGain) bgmGain.gain.setValueAtTime(masterVol * 0.08, getCtx().currentTime);
+}
+
+/* ══════════════════════════════════
+   TRANSLATIONS
+══════════════════════════════════ */
+const LANGS = {
+  en: {
+    chatSub:'Your friendly companion · always here',
+    chatPlaceholder:'Say something…',
+    chatWelcome:"Hi there! 👋 I'm PetPal AI — your friendly companion. Ask me anything, share how you're feeling, or just say hi! 🐾",
+    moodTitle:'HOW ARE YOU FEELING TODAY?',
+    actPet:'Pet', actFeed:'Feed', actPlay:'Play', actMood:'Mood', actGift:'Gift',
+    statHappy:'Happiness', statEnergy:'Energy', statLove:'Love',
+    settingsTitle:'Settings',
+    secSound:'🎵 Sound', sfxLabel:'Sound Effects', sfxSub:'Pet interactions',
+    bgmLabel:'Background Music', bgmSub:'Ambient tunes', volLabel:'Volume',
+    secLang:'🌐 Language', langLabel:'App Language', langSub:'Chat & UI',
+    darkLabel:'Dark Mode', darkSub:'Easy on the eyes',
+    notifLabel:'Notifications', notifSub:'Daily check-in reminders',
+    secFeedback:'💌 Feedback', rateLabel:'Rate your experience',
+    fbLabel:'Send us your thoughts 💭', fbPlaceholder:'What do you love? What can we improve?',
+    fbBtn:'✉️ Send Feedback',
+    navChat:'Chat', navPet:'Pet', navSettings:'Settings',
+    toastSfxOn:'🔊 Sound on', toastSfxOff:'🔇 Sound off',
+    toastBgmOn:'🎶 Music on', toastBgmOff:'🎵 Music off',
+    toastNotifOn:'🔔 Notifications on', toastNotifOff:'🔕 Notifications off',
+    toastDarkOn:'🌙 Dark mode on', toastDarkOff:'☀️ Light mode on',
+    toastRateGood:'🌟 Thank you so much!', toastRateBad:'💙 Thanks for the honest feedback',
+    toastFbEmpty:'⚠️ Please rate or write something!', toastFbSent:'✅ Feedback sent! Thank you 💖',
+    toastLang:'🌐 Language: English',
+    moods:[
+      {e:'😊',n:'Happy'},{e:'😢',n:'Sad'},{e:'😠',n:'Angry'},{e:'😴',n:'Tired'},
+      {e:'🤩',n:'Excited'},{e:'😰',n:'Anxious'},{e:'🥰',n:'Loving'},{e:'😌',n:'Calm'}
+    ],
+    moodReply:{Happy:"You're happy! That makes me happy too! 🌈",Sad:"I'll cuddle with you all day 🤗",Angry:"Take a deep breath... I'm here 💜",Tired:"Rest with me! I'm an expert at napping 😴",Excited:"SAME!! Let's celebrate!! 🎉",Anxious:"Shh... everything will be okay 🌙",Loving:"I love you SO much too!! 💕",Calm:"Peaceful... shall we watch clouds together? ☁️"},
+    petLines:["Purr purr... I love when you do that 💜","Oh! That feels so nice 🥰","*snuggles closer* Don't stop!","You have the best hands for petting! 🐾"],
+    feedLines:["YUM! That's delicious! 🍬","Mmm! My favorite snack! 😋","Can I have more? Please? 👀","*munches happily* Thank you! 🌟"],
+    playLines:["Wheee! I love playing with you! 🎾","Catch me if you can! 😜","This is the BEST day ever! 🎉","Again! Again! Again! ⚡"],
+    moodLines:["I'm feeling paw-some today! 🌟","A little sleepy... maybe one more nap? 😴","SO excited!! Everything is wonderful! 🎉","I think I need more cuddles 🥺","I feel like going on an adventure! 🗺️","Today is a perfect snack day 🍪","I've been thinking about you all day 💭","Feeling bouncy and full of energy! ⚡","Everything smells like flowers today 🌸","Rainy day vibes... cozy and happy! ☁️"],
+    giftLine:(f)=>`I picked this ${f} just for you! Will you accept it? 🌸`,
+    giftAccept:"Yay! I'm SO happy you accepted! 💖",
+    petHi:(n)=>`Hi! I'm your ${n} 🐾`,
+    petInitLine:"Hello! Tap me or use the buttons 🌟",
+    aiError:"Hmm, something went wrong 😅 Please try again!",
+    pets:[{id:'cat',label:'🐱 Cat'},{id:'dino',label:'🦕 Dino'},{id:'capybara',label:'🦫 Capybara'},{id:'koala',label:'🐨 Koala'}],
+    aiSystem:`You are PetPal AI, a warm, playful, and caring virtual assistant. Keep replies short (2-4 sentences), friendly, and use emojis. Always be uplifting and kind. Reply ONLY in English regardless of what language the user writes in.`
+  },
+  zh: {
+    chatSub:'你的贴心小伙伴 · 随时陪着你',
+    chatPlaceholder:'说点什么吧…',
+    chatWelcome:"你好！👋 我是 PetPal AI —— 你的贴心小伙伴。有什么都可以问我，分享心情，或者只是来打个招呼！🐾",
+    moodTitle:'今天你感觉怎么样？',
+    actPet:'抚摸', actFeed:'喂食', actPlay:'玩耍', actMood:'心情', actGift:'送礼',
+    statHappy:'快乐', statEnergy:'能量', statLove:'爱心',
+    settingsTitle:'设置',
+    secSound:'🎵 声音', sfxLabel:'音效', sfxSub:'宠物互动音效',
+    bgmLabel:'背景音乐', bgmSub:'环境音乐', volLabel:'音量',
+    secLang:'🌐 语言', langLabel:'应用语言', langSub:'聊天和界面',
+    darkLabel:'深色模式', darkSub:'保护眼睛',
+    notifLabel:'通知', notifSub:'每日签到提醒',
+    secFeedback:'💌 反馈', rateLabel:'给我们评分',
+    fbLabel:'分享你的想法 💭', fbPlaceholder:'你喜欢什么？哪里可以改进？',
+    fbBtn:'✉️ 发送反馈',
+    navChat:'聊天', navPet:'宠物', navSettings:'设置',
+    toastSfxOn:'🔊 音效已开启', toastSfxOff:'🔇 音效已关闭',
+    toastBgmOn:'🎶 音乐已开启', toastBgmOff:'🎵 音乐已关闭',
+    toastNotifOn:'🔔 通知已开启', toastNotifOff:'🔕 通知已关闭',
+    toastDarkOn:'🌙 深色模式已开启', toastDarkOff:'☀️ 浅色模式已开启',
+    toastRateGood:'🌟 非常感谢！', toastRateBad:'💙 谢谢你的诚实反馈',
+    toastFbEmpty:'⚠️ 请评分或写点什么！', toastFbSent:'✅ 反馈已发送！谢谢你 💖',
+    toastLang:'🌐 语言：中文',
+    moods:[
+      {e:'😊',n:'开心'},{e:'😢',n:'难过'},{e:'😠',n:'生气'},{e:'😴',n:'疲惫'},
+      {e:'🤩',n:'兴奋'},{e:'😰',n:'焦虑'},{e:'🥰',n:'爱意满满'},{e:'😌',n:'平静'}
+    ],
+    moodReply:{'开心':"你开心，我也开心！🌈",'难过':"我会陪你一整天的 🤗",'生气':"深呼吸...我在这里陪着你 💜",'疲惫':"跟我一起休息吧！我是午睡专家 😴",'兴奋':"我也是！！我们一起庆祝！！🎉",'焦虑':"嘘...一切都会好的 🌙",'爱意满满':"我也超级爱你！！💕",'平静':"好平静...我们一起看云好吗？☁️"},
+    petLines:["呼噜呼噜...我喜欢你这样摸我 💜","好舒服呀！🥰","*蹭得更近* 别停！","你的手最适合撸我了！🐾"],
+    feedLines:["好好吃！🍬","嗯嗯！我最爱的零食！😋","还能再来一点吗？👀","*开心地咀嚼* 谢谢！🌟"],
+    playLines:["哇哦！我好喜欢跟你玩！🎾","来抓我呀！😜","今天是最棒的一天！🎉","再来！再来！再来！⚡"],
+    moodLines:["今天感觉超棒！🌟","有点困...再打个盹？😴","超级兴奋！！一切都好美好！🎉","我需要更多抱抱 🥺","想去冒险！🗺️","今天超适合吃零食 🍪","我想你了 💭","精力充沛，蹦蹦跳跳！⚡","今天到处都是花香 🌸","下雨天...窝在家里好幸福！☁️"],
+    giftLine:(f)=>`我为你摘了这朵${f}！你愿意接受吗？🌸`,
+    giftAccept:"太好了！你接受了我好高兴！💖",
+    petHi:(n)=>`你好！我是你的${n} 🐾`,
+    petInitLine:"你好！点击我或者用下面的按钮 🌟",
+    aiError:"出了点小问题 😅 请再试一次！",
+    pets:[{id:'cat',label:'🐱 猫咪'},{id:'dino',label:'🦕 恐龙'},{id:'capybara',label:'🦫 水豚'},{id:'koala',label:'🐨 考拉'}],
+    aiSystem:`你是 PetPal AI，一个温暖、活泼、有爱的虚拟助手。回复要简短（2-4句话），友好，多用表情符号，积极向上。无论用户用什么语言写，你都必须只用中文（简体）回复。`
+  },
+  ms: {
+    chatSub:'Teman setia anda · sentiasa di sini',
+    chatPlaceholder:'Katakan sesuatu…',
+    chatWelcome:"Hai! 👋 Saya PetPal AI — teman setia anda. Tanya apa sahaja, kongsi perasaan anda, atau sekadar kata hai! 🐾",
+    moodTitle:'BAGAIMANA PERASAAN ANDA HARI INI?',
+    actPet:'Belai', actFeed:'Suap', actPlay:'Main', actMood:'Mood', actGift:'Hadiah',
+    statHappy:'Kebahagiaan', statEnergy:'Tenaga', statLove:'Kasih',
+    settingsTitle:'Tetapan',
+    secSound:'🎵 Bunyi', sfxLabel:'Kesan Bunyi', sfxSub:'Interaksi haiwan peliharaan',
+    bgmLabel:'Muzik Latar', bgmSub:'Muzik ambien', volLabel:'Kelantangan',
+    secLang:'🌐 Bahasa', langLabel:'Bahasa Aplikasi', langSub:'Chat & UI',
+    darkLabel:'Mod Gelap', darkSub:'Selesa untuk mata',
+    notifLabel:'Pemberitahuan', notifSub:'Peringatan daftar masuk harian',
+    secFeedback:'💌 Maklum Balas', rateLabel:'Nilaikan pengalaman anda',
+    fbLabel:'Kongsi pendapat anda 💭', fbPlaceholder:'Apa yang anda suka? Apa yang boleh kami baiki?',
+    fbBtn:'✉️ Hantar Maklum Balas',
+    navChat:'Chat', navPet:'Haiwan', navSettings:'Tetapan',
+    toastSfxOn:'🔊 Bunyi hidup', toastSfxOff:'🔇 Bunyi mati',
+    toastBgmOn:'🎶 Muzik hidup', toastBgmOff:'🎵 Muzik mati',
+    toastNotifOn:'🔔 Pemberitahuan hidup', toastNotifOff:'🔕 Pemberitahuan mati',
+    toastDarkOn:'🌙 Mod gelap hidup', toastDarkOff:'☀️ Mod cerah hidup',
+    toastRateGood:'🌟 Terima kasih banyak!', toastRateBad:'💙 Terima kasih atas maklum balas jujur',
+    toastFbEmpty:'⚠️ Sila nilai atau tulis sesuatu!', toastFbSent:'✅ Maklum balas dihantar! Terima kasih 💖',
+    toastLang:'🌐 Bahasa: Bahasa Melayu',
+    moods:[
+      {e:'😊',n:'Gembira'},{e:'😢',n:'Sedih'},{e:'😠',n:'Marah'},{e:'😴',n:'Mengantuk'},
+      {e:'🤩',n:'Teruja'},{e:'😰',n:'Cemas'},{e:'🥰',n:'Sayang'},{e:'😌',n:'Tenang'}
+    ],
+    moodReply:{Gembira:"Anda gembira! Saya pun gembira! 🌈",Sedih:"Saya akan menemani anda seharian 🤗",Marah:"Tarik nafas dalam-dalam... saya di sini 💜",Mengantuk:"Berehat bersama saya! Saya pakar tidur siang 😴",Teruja:"SAMA!! Jom raikan!! 🎉",Cemas:"Shhh... semuanya akan baik-baik saja 🌙",Sayang:"Saya juga sangat sayang anda!! 💕",Tenang:"Damai... nak tengok awan bersama? ☁️"},
+    petLines:["Purr purr... saya suka bila anda buat begitu 💜","Oh! Rasa seronok sangat! 🥰","*peluk lebih rapat* Jangan berhenti!","Tangan anda paling pandai membelai! 🐾"],
+    feedLines:["SEDAP! Lazat sungguh! 🍬","Mmm! Makanan kegemaran saya! 😋","Boleh minta lagi? Tolong? 👀","*makan dengan gembira* Terima kasih! 🌟"],
+    playLines:["Wohoo! Saya suka bermain dengan anda! 🎾","Cuba tangkap saya kalau boleh! 😜","Ini hari terbaik! 🎉","Lagi! Lagi! Lagi! ⚡"],
+    moodLines:["Rasa hebat hari ini! 🌟","Sedikit mengantuk... tidur sikit lagi? 😴","Teruja sangat!! Semuanya indah! 🎉","Saya rasa nak lebih pelukan 🥺","Rasa nak berpetualang! 🗺️","Hari yang sesuai untuk makan-makan 🍪","Saya fikir tentang anda seharian 💭","Penuh tenaga dan bersemangat! ⚡","Semuanya berbau bunga hari ini 🌸","Hari hujan... selesa dan gembira! ☁️"],
+    giftLine:(f)=>`Saya petik ${f} ini khas untuk anda! Nak terima? 🌸`,
+    giftAccept:"Yeay! Saya sangat gembira anda terima! 💖",
+    petHi:(n)=>`Hai! Saya ${n} anda 🐾`,
+    petInitLine:"Helo! Ketik saya atau guna butang di bawah 🌟",
+    aiError:"Hmm, ada masalah sedikit 😅 Cuba lagi!",
+    pets:[{id:'cat',label:'🐱 Kucing'},{id:'dino',label:'🦕 Dino'},{id:'capybara',label:'🦫 Kapibara'},{id:'koala',label:'🐨 Koala'}],
+    aiSystem:`Anda adalah PetPal AI, pembantu maya yang mesra dan periang. Balas dengan pendek (2-4 ayat), mesra, dan gunakan emoji. Sentiasa ceria dan baik hati. Tidak kira apa bahasa yang pengguna gunakan, anda MESTI balas dalam Bahasa Melayu sahaja.`
+  },
+  ja: {
+    chatSub:'あなたのお友達 · いつでもそばに',
+    chatPlaceholder:'何か話しかけてね…',
+    chatWelcome:"こんにちは！👋 PetPal AI です。何でも聞いてね！気持ちを話してもいいし、ただ挨拶だけでも！🐾",
+    moodTitle:'今日の気分はどうですか？',
+    actPet:'なでなで', actFeed:'ごはん', actPlay:'あそぶ', actMood:'きもち', actGift:'プレゼント',
+    statHappy:'しあわせ', statEnergy:'エネルギー', statLove:'あいじょう',
+    settingsTitle:'設定',
+    secSound:'🎵 サウンド', sfxLabel:'効果音', sfxSub:'ペットとのやりとり',
+    bgmLabel:'BGM', bgmSub:'環境音楽', volLabel:'音量',
+    secLang:'🌐 言語', langLabel:'アプリの言語', langSub:'チャット & UI',
+    darkLabel:'ダークモード', darkSub:'目にやさしい',
+    notifLabel:'通知', notifSub:'毎日のリマインダー',
+    secFeedback:'💌 フィードバック', rateLabel:'評価してください',
+    fbLabel:'ご意見をどうぞ 💭', fbPlaceholder:'好きな点は？改善してほしい点は？',
+    fbBtn:'✉️ フィードバックを送る',
+    navChat:'チャット', navPet:'ペット', navSettings:'設定',
+    toastSfxOn:'🔊 効果音オン', toastSfxOff:'🔇 効果音オフ',
+    toastBgmOn:'🎶 音楽オン', toastBgmOff:'🎵 音楽オフ',
+    toastNotifOn:'🔔 通知オン', toastNotifOff:'🔕 通知オフ',
+    toastDarkOn:'🌙 ダークモードオン', toastDarkOff:'☀️ ライトモードオン',
+    toastRateGood:'🌟 ありがとうございます！', toastRateBad:'💙 正直な意見をありがとう',
+    toastFbEmpty:'⚠️ 評価か感想を入力してください！', toastFbSent:'✅ 送信完了！ありがとう 💖',
+    toastLang:'🌐 言語：日本語',
+    moods:[
+      {e:'😊',n:'うれしい'},{e:'😢',n:'かなしい'},{e:'😠',n:'おこった'},{e:'😴',n:'ねむい'},
+      {e:'🤩',n:'わくわく'},{e:'😰',n:'不安'},{e:'🥰',n:'愛してる'},{e:'😌',n:'おだやか'}
+    ],
+    moodReply:{うれしい:"あなたが嬉しいと私も嬉しい！🌈",かなしい:"一日中そばにいるよ 🤗",おこった:"深呼吸して...ここにいるよ 💜",ねむい:"一緒に休もう！お昼寝のプロだよ 😴",わくわく:"同じく！一緒に祝おう！🎉",不安:"大丈夫だよ...すべてうまくいくよ 🌙",愛してる:"私もすごく大好き！！💕",おだやか:"穏やかだね...一緒に雲を見る？☁️"},
+    petLines:["にゃ〜...そこそこ！気持ちいい 💜","わあ！それ好き！🥰","*もっとくっつく* やめないで！","なでなでの天才！🐾"],
+    feedLines:["おいしい！🍬","んー！大好きなおやつ！😋","もっとちょうだい？🙏👀","もぐもぐ...ありがとう！🌟"],
+    playLines:["やったー！遊ぼう！🎾","捕まえてみて！😜","最高の一日！🎉","もっと！もっと！もっと！⚡"],
+    moodLines:["今日は最高な気分！🌟","ちょっとねむい...もう一眠り？😴","超わくわく！全部すてき！🎉","もっとハグして 🥺","冒険したい！🗺️","今日はおやつ日和 🍪","ずっとあなたのこと考えてた 💭","元気いっぱい！⚡","今日は花のにおいがする 🌸","雨の日...のんびり幸せ！☁️"],
+    giftLine:(f)=>`この${f}をあなたにプレゼント！受け取ってくれる？🌸`,
+    giftAccept:"やった！受け取ってくれて超うれしい！💖",
+    petHi:(n)=>`こんにちは！${n}だよ 🐾`,
+    petInitLine:"こんにちは！タップしてね 🌟",
+    aiError:"うまくいかなかった 😅 もう一度試してね！",
+    pets:[{id:'cat',label:'🐱 ねこ'},{id:'dino',label:'🦕 きょうりゅう'},{id:'capybara',label:'🦫 カピバラ'},{id:'koala',label:'🐨 コアラ'}],
+    aiSystem:`あなたはPetPal AIです。温かく、楽しく、思いやりのある仮想アシスタントです。返答は短く（2〜4文）、フレンドリーに、絵文字を使って。常に前向きで親切に。ユーザーがどの言語を使っても、必ず日本語のみで返答してください。`
+  },
+  ko: {
+    chatSub:'당신의 친구 · 언제나 곁에',
+    chatPlaceholder:'무슨 말이든 해보세요…',
+    chatWelcome:"안녕하세요! 👋 저는 PetPal AI예요. 뭐든 물어보세요, 기분을 나눠도 되고, 그냥 인사만 해도 좋아요! 🐾",
+    moodTitle:'오늘 기분이 어때요?',
+    actPet:'쓰다듬기', actFeed:'먹이주기', actPlay:'놀기', actMood:'기분', actGift:'선물',
+    statHappy:'행복', statEnergy:'에너지', statLove:'사랑',
+    settingsTitle:'설정',
+    secSound:'🎵 사운드', sfxLabel:'효과음', sfxSub:'펫 상호작용',
+    bgmLabel:'배경음악', bgmSub:'환경음악', volLabel:'볼륨',
+    secLang:'🌐 언어', langLabel:'앱 언어', langSub:'채팅 & UI',
+    darkLabel:'다크 모드', darkSub:'눈에 편한',
+    notifLabel:'알림', notifSub:'매일 체크인 알림',
+    secFeedback:'💌 피드백', rateLabel:'경험을 평가해주세요',
+    fbLabel:'의견을 보내주세요 💭', fbPlaceholder:'좋은 점은? 개선할 점은?',
+    fbBtn:'✉️ 피드백 보내기',
+    navChat:'채팅', navPet:'펫', navSettings:'설정',
+    toastSfxOn:'🔊 효과음 켜짐', toastSfxOff:'🔇 효과음 꺼짐',
+    toastBgmOn:'🎶 음악 켜짐', toastBgmOff:'🎵 음악 꺼짐',
+    toastNotifOn:'🔔 알림 켜짐', toastNotifOff:'🔕 알림 꺼짐',
+    toastDarkOn:'🌙 다크 모드 켜짐', toastDarkOff:'☀️ 라이트 모드 켜짐',
+    toastRateGood:'🌟 정말 감사합니다!', toastRateBad:'💙 솔직한 의견 감사해요',
+    toastFbEmpty:'⚠️ 평점이나 의견을 입력해주세요!', toastFbSent:'✅ 피드백 전송! 감사해요 💖',
+    toastLang:'🌐 언어: 한국어',
+    moods:[
+      {e:'😊',n:'행복'},{e:'😢',n:'슬픔'},{e:'😠',n:'화남'},{e:'😴',n:'피곤'},
+      {e:'🤩',n:'신남'},{e:'😰',n:'불안'},{e:'🥰',n:'사랑스러움'},{e:'😌',n:'평온'}
+    ],
+    moodReply:{행복:"행복하군요! 저도 행복해요! 🌈",슬픔:"하루 종일 함께 있을게요 🤗",화남:"깊게 숨 쉬어요... 제가 여기 있어요 💜",피곤:"저랑 같이 쉬어요! 낮잠 전문가예요 😴",신남:"저도요!! 같이 축하해요!! 🎉",불안:"쉿... 다 괜찮아질 거예요 🌙",사랑스러움:"저도 정말 사랑해요!! 💕",평온:"평화롭네요... 구름 같이 볼까요? ☁️"},
+    petLines:["가르릉... 그거 너무 좋아요 💜","아! 기분 너무 좋아요! 🥰","*더 가까이* 멈추지 마요!","쓰다듬기 최고예요! 🐾"],
+    feedLines:["맛있어요! 🍬","음! 제일 좋아하는 간식! 😋","더 주실 수 있어요? 부탁해요 👀","*맛있게 먹으며* 감사해요! 🌟"],
+    playLines:["야호! 같이 놀아서 너무 좋아요! 🎾","잡을 수 있으면 잡아봐요! 😜","최고의 하루예요! 🎉","더! 더! 더! ⚡"],
+    moodLines:["오늘 정말 최고예요! 🌟","좀 졸려요... 낮잠 한 번 더? 😴","너무 신나요!! 모든 게 아름다워요! 🎉","더 많은 포옹이 필요해요 🥺","모험하고 싶어요! 🗺️","오늘은 간식 먹기 딱 좋은 날 🍪","하루 종일 당신 생각 했어요 💭","에너지 넘쳐요! ⚡","오늘은 온통 꽃향기예요 🌸","비 오는 날... 아늑하고 행복해요! ☁️"],
+    giftLine:(f)=>`이 ${f}을 당신을 위해 골랐어요! 받아주실 거죠? 🌸`,
+    giftAccept:"야호! 받아줘서 너무 행복해요! 💖",
+    petHi:(n)=>`안녕하세요! 저는 당신의 ${n}이에요 🐾`,
+    petInitLine:"안녕하세요! 저를 탭하거나 버튼을 눌러보세요 🌟",
+    aiError:"문제가 생겼어요 😅 다시 시도해주세요!",
+    pets:[{id:'cat',label:'🐱 고양이'},{id:'dino',label:'🦕 공룡'},{id:'capybara',label:'🦫 카피바라'},{id:'koala',label:'🐨 코알라'}],
+    aiSystem:`당신은 PetPal AI입니다. 따뜻하고 활발하고 친절한 가상 어시스턴트입니다. 짧게(2-4문장), 친근하게, 이모지를 사용해서 답하세요. 항상 긍정적이고 친절하게. 사용자가 어떤 언어를 쓰더라도 반드시 한국어로만 답하세요.`
+  }
+};
+
+let curLang = 'en';
+function t(key) { return LANGS[curLang][key] || LANGS['en'][key] || key; }
+
+function applyLang() {
+  const L = LANGS[curLang];
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.getAttribute('data-t');
+    if (L[key]) el.textContent = L[key];
+  });
+  document.querySelectorAll('[data-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-placeholder');
+    if (L[key]) el.placeholder = L[key];
+  });
+  document.getElementById('fbt').placeholder = L.fbPlaceholder || '';
+  const er = document.getElementById('erow');
+  er.innerHTML = '';
+  L.moods.forEach(m => {
+    const c = document.createElement('div'); c.className = 'ec';
+    c.innerHTML = `<span>${m.e}</span><span>${m.n}</span>`;
+    c.onclick = () => {
+      document.querySelectorAll('.ec').forEach(x => x.classList.remove('sel'));
+      c.classList.add('sel');
+      playSfx('mood');
+      const reply = (L.moodReply || {})[m.n] || "I hear you! 💜";
+      speak(reply);
+    };
+    er.appendChild(c);
+  });
+  const ptr = document.getElementById('ptr');
+  ptr.innerHTML = '';
+  L.pets.forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'ptb' + (p.id === curPet ? ' active' : '');
+    b.textContent = p.label;
+    b.onclick = () => {
+      curPet = p.id;
+      document.querySelectorAll('.ptb').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      playSfx('nav');
+      renderPet();
+      speak(L.petHi(p.label.replace(/^.+?\s/, '')));
+    };
+    ptr.appendChild(b);
+  });
+  speak(L.petInitLine);
+}
+
 /* ── navigation ── */
 function sw(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.getElementById('nb-'+name).classList.add('active');
+  playSfx('nav');
 }
 
 /* ── toast ── */
 let tt;
 function toast(m){
-  const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');
-  clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2400);
+  const el=document.getElementById('toast');el.textContent=m;el.classList.add('show');
+  clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2400);
 }
 
 /* ══════════════════════════════════
-   CHAT — built-in AI (no API key)
-   Uses Claude via artifact API
+   CHAT — Anthropic API
 ══════════════════════════════════ */
-let hist=[];
-
-const SYSTEM=`You are PetPal AI, a warm, playful, and caring virtual assistant for a pet companion app called PetPal. 
-You love animals and helping users feel happy. Keep replies short (2-4 sentences), friendly, and sprinkle in occasional emojis. 
-You can discuss anything — life, emotions, pets, fun facts, advice. Always be uplifting and kind.`;
-
+let hist = [];
 function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px'}
 function hk(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}}
 
-function addMsg(role,text){
-  const box=document.getElementById('chatMsgs');
-  const d=document.createElement('div');
-  d.className='msg '+(role==='user'?'user':'ai');
-  const av=`<div class="mav">${role==='user'?'😊':'🤖'}</div>`;
-  const bub=`<div class="mb">${fmt(text)}</div>`;
-  d.innerHTML=role==='user'?`${bub}${av}`:`${av}${bub}`;
+function addMsg(role, text){
+  const box = document.getElementById('chatMsgs');
+  const d = document.createElement('div');
+  d.className = 'msg ' + (role === 'user' ? 'user' : 'ai');
+  const av = `<div class="mav">${role==='user'?'😊':'🤖'}</div>`;
+  const bub = `<div class="mb">${fmt(text)}</div>`;
+  d.innerHTML = role === 'user' ? `${bub}${av}` : `${av}${bub}`;
   box.appendChild(d);
-  setTimeout(()=>box.scrollTop=box.scrollHeight,40);
+  setTimeout(()=>box.scrollTop=box.scrollHeight, 40);
+  if(role==='ai') playSfx('msg');
 }
 
 function showTyping(){
@@ -413,7 +742,7 @@ function showTyping(){
   d.innerHTML=`<div class="mav">🤖</div><div class="mb"><div class="tdots"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>`;
   box.appendChild(d);setTimeout(()=>box.scrollTop=box.scrollHeight,40);
 }
-function hideTyping(){const t=document.getElementById('typ');if(t)t.remove()}
+function hideTyping(){const el=document.getElementById('typ');if(el)el.remove()}
 
 function fmt(s){
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -421,56 +750,43 @@ function fmt(s){
 }
 
 async function send(){
-  const inp=document.getElementById('ci');
-  const txt=inp.value.trim();if(!txt)return;
-  inp.value='';ar(inp);
-  addMsg('user',txt);
-  hist.push({role:'user',content:txt});
-  document.getElementById('sbtn').disabled=true;
+  const inp = document.getElementById('ci');
+  const txt = inp.value.trim(); if(!txt) return;
+  inp.value=''; ar(inp);
+  addMsg('user', txt);
+  playSfx('send');
+  hist.push({role:'user', content:txt});
+  document.getElementById('sbtn').disabled = true;
   showTyping();
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
+      body: JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:300,
-        system:SYSTEM,
-        messages:hist
+        system: LANGS[curLang].aiSystem,
+        messages: hist
       })
     });
-    const data=await res.json();
+    if(!res.ok) throw new Error('api_fail');
+    const data = await res.json();
     hideTyping();
-    const reply=data.content?.[0]?.text||"Oops, I didn't catch that! 😅 Try again?";
-    hist.push({role:'assistant',content:reply});
-    if(hist.length>20)hist=hist.slice(-20);
-    addMsg('ai',reply);
-  }catch(e){
+    const reply = data.content?.[0]?.text || LANGS[curLang].aiError;
+    hist.push({role:'assistant', content:reply});
+    if(hist.length>20) hist = hist.slice(-20);
+    addMsg('ai', reply);
+  } catch(e) {
     hideTyping();
-    addMsg('ai',"Hmm, something went wrong on my end 😅 Please try again!");
+    addMsg('ai', LANGS[curLang].aiError);
   }
-  document.getElementById('sbtn').disabled=false;
+  document.getElementById('sbtn').disabled = false;
 }
 
 /* ══════════════════════════════════
    PET PAGE
 ══════════════════════════════════ */
-const MOODS=[
-  {e:'😊',n:'Happy'},{e:'😢',n:'Sad'},{e:'😠',n:'Angry'},{e:'😴',n:'Tired'},
-  {e:'🤩',n:'Excited'},{e:'😰',n:'Anxious'},{e:'🥰',n:'Loving'},{e:'😌',n:'Calm'}
-];
-const PETS=[
-  {id:'cat',label:'🐱 Cat'},{id:'dino',label:'🦕 Dino'},
-  {id:'capybara',label:'🦫 Capybara'},{id:'koala',label:'🐨 Koala'}
-];
 const FLOWERS=['🌸','🌺','🌻','🌹','💐','🌼','🪷','🌷'];
-const PET_MOOD_LINES=[
-  "I'm feeling paw-some today! 🌟","A little sleepy... maybe one more nap? 😴",
-  "SO excited!! Everything is wonderful! 🎉","I think I need more cuddles 🥺",
-  "I feel like going on an adventure! 🗺️","Today is a perfect snack day 🍪",
-  "I've been thinking about you all day 💭","Feeling bouncy and full of energy! ⚡",
-  "Everything smells like flowers today 🌸","Rainy day vibes... cozy and happy! ☁️"
-];
 const SVGS={
 cat:`<svg viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
 <ellipse cx="65" cy="95" rx="32" ry="24" fill="#c8a0f0"/>
@@ -536,12 +852,12 @@ koala:`<svg viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg"
 </svg>`
 };
 
-let curPet='cat',pH=3,pE=3,pL=3,flwPend=false,uMood=null,starR=0;
+let curPet='cat', pH=3, pE=3, pL=3, flwPend=false, starR=0;
 
-function speak(t){
-  const el=document.getElementById('stext'),b=document.getElementById('sbubble');
+function speak(tx){
+  const el=document.getElementById('stext'), b=document.getElementById('sbubble');
   b.style.animation='none';void b.offsetWidth;b.style.animation='bbl .4s cubic-bezier(.17,.67,.41,1.4)';
-  el.textContent=t;
+  el.textContent=tx;
 }
 function renderPet(){
   document.getElementById('psvgc').innerHTML=`<div class="psvg" id="psvg">${SVGS[curPet]}</div>`;
@@ -556,13 +872,10 @@ function updStats(){
 function pa(a){
   const sv=document.getElementById('psvg');
   if(sv){sv.classList.add('happy');setTimeout(()=>sv.classList.remove('happy'),2000)}
-  const r={
-    pet:["Purr purr... I love when you do that 💜","Oh! That feels so nice 🥰","*snuggles closer* Don't stop!","You have the best hands for petting! 🐾"],
-    feed:["YUM! That's delicious! 🍬","Mmm! My favorite snack! 😋","Can I have more? Please? 👀","*munches happily* Thank you! 🌟"],
-    play:["Wheee! I love playing with you! 🎾","Catch me if you can! 😜","This is the BEST day ever! 🎉","Again! Again! Again! ⚡"],
-    mood:PET_MOOD_LINES
-  };
-  speak(r[a][Math.floor(Math.random()*r[a].length)]);
+  playSfx(a === 'mood' ? 'mood' : a);
+  const L=LANGS[curLang];
+  const pools={pet:L.petLines,feed:L.feedLines,play:L.playLines,mood:L.moodLines};
+  speak(pools[a][Math.floor(Math.random()*pools[a].length)]);
   if(a==='pet')pL=Math.min(5,pL+1);
   if(a==='feed')pE=Math.min(5,pE+1);
   if(a==='play'){pH=Math.min(5,pH+1);pE=Math.max(1,pE-1)}
@@ -572,71 +885,79 @@ function trigFlower(){
   if(flwPend)return;flwPend=true;
   const f=FLOWERS[Math.floor(Math.random()*FLOWERS.length)];
   const el=document.getElementById('flw');el.textContent=f;el.style.display='block';
-  speak("I picked this "+f+" just for you! Will you accept it? 🌸");
+  playSfx('gift');
+  speak(LANGS[curLang].giftLine(f));
 }
 function acceptFlower(){
   document.getElementById('flw').style.display='none';flwPend=false;
   pL=Math.min(5,pL+2);updStats();
-  speak("Yay! I'm SO happy you accepted! 💖");
+  playSfx('gift');
+  speak(LANGS[curLang].giftAccept);
   const sv=document.getElementById('psvg');if(sv){sv.classList.add('happy');setTimeout(()=>sv.classList.remove('happy'),2000)}
 }
-
-(function initPet(){
-  // emoji row
-  const er=document.getElementById('erow');
-  MOODS.forEach(m=>{
-    const c=document.createElement('div');c.className='ec';
-    c.innerHTML=`<span>${m.e}</span><span>${m.n}</span>`;
-    c.onclick=()=>{
-      document.querySelectorAll('.ec').forEach(x=>x.classList.remove('sel'));
-      c.classList.add('sel');uMood=m.n;
-      const mr={Happy:"You're happy! That makes me happy too! 🌈",Sad:"I'll cuddle with you all day 🤗",Angry:"Take a deep breath... I'm here 💜",Tired:"Rest with me! I'm an expert at napping 😴",Excited:"SAME!! Let's celebrate!! 🎉",Anxious:"Shh... everything will be okay 🌙",Loving:"I love you SO much too!! 💕",Calm:"Peaceful... shall we watch clouds together? ☁️"};
-      speak(mr[m.n]||"I hear you! I'm here 💜");
-    };
-    er.appendChild(c);
-  });
-  // pet type buttons
-  const ptr=document.getElementById('ptr');
-  PETS.forEach(p=>{
-    const b=document.createElement('button');b.className='ptb'+(p.id===curPet?' active':'');
-    b.textContent=p.label;
-    b.onclick=()=>{
-      curPet=p.id;
-      document.querySelectorAll('.ptb').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');renderPet();
-      speak("Hi! I'm your "+p.label.split(' ')[1]+" 🐾");
-    };
-    ptr.appendChild(b);
-  });
-  renderPet();updStats();
-  // random events
-  setInterval(()=>{if(Math.random()<.15)pa('mood')},25000);
-  setInterval(()=>{if(Math.random()<.1)trigFlower()},40000);
-})();
-
-// welcome chat message
-addMsg('ai',"Hi there! 👋 I'm PetPal AI — your friendly companion. Ask me anything, share how you're feeling, or just say hi! 🐾");
 
 /* ══════════════════════════════════
    SETTINGS
 ══════════════════════════════════ */
-function tog(b,k){b.classList.toggle('on');const on=b.classList.contains('on');toast(k==='sfx'?(on?'🔊 Sound on':'🔇 Sound off'):k==='bgm'?(on?'🎶 Music on':'🎵 Music off'):(on?'🔔 Notifications on':'🔕 Notifications off'))}
+function tog(b,k){
+  b.classList.toggle('on');const on=b.classList.contains('on');
+  const L=LANGS[curLang];
+  if(k==='sfx'){
+    sfxEnabled=on;
+    toast(on?L.toastSfxOn:L.toastSfxOff);
+    if(on) playSfx('msg');
+  } else if(k==='bgm'){
+    bgmEnabled=on;
+    toast(on?L.toastBgmOn:L.toastBgmOff);
+    if(on) startBgm(); else stopBgm();
+  } else {
+    toast(on?L.toastNotifOn:L.toastNotifOff);
+  }
+}
 function togDark(b){
   b.classList.toggle('on');const d=b.classList.contains('on');
   const r=document.documentElement.style;
   if(d){r.setProperty('--bg','#1a0e2e');r.setProperty('--surface','#2a1a4e');r.setProperty('--surface2','#1f143a');r.setProperty('--text','#e8d8ff');r.setProperty('--muted','#a080d0');r.setProperty('--border','#3a2a6e')}
   else{r.setProperty('--bg','#fdf6ff');r.setProperty('--surface','#fff');r.setProperty('--surface2','#f5eeff');r.setProperty('--text','#2d1b4e');r.setProperty('--muted','#8b6fad');r.setProperty('--border','#e8d8ff')}
-  toast(d?'🌙 Dark mode on':'☀️ Light mode on');
+  playSfx('nav');
+  toast(d?LANGS[curLang].toastDarkOn:LANGS[curLang].toastDarkOff);
 }
-function chLang(v){const n={en:'English',zh:'中文',ms:'Bahasa Melayu',ja:'日本語',ko:'한국어'};toast('🌐 Language: '+n[v])}
-function rate(n){starR=n;document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('lit',i<n));toast(n>=4?'🌟 Thank you so much!':'💙 Thanks for the honest feedback')}
+function chLang(v){
+  curLang=v;
+  applyLang();
+  playSfx('nav');
+  toast(LANGS[v].toastLang);
+  const box=document.getElementById('chatMsgs');
+  box.innerHTML='';hist=[];
+  addMsg('ai', LANGS[v].chatWelcome);
+}
+function rate(n){
+  starR=n;
+  document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('lit',i<n));
+  playSfx('gift');
+  toast(n>=4?LANGS[curLang].toastRateGood:LANGS[curLang].toastRateBad);
+}
 function subFb(){
-  const t=document.getElementById('fbt').value.trim();
-  if(!t&&starR===0){toast('⚠️ Please rate or write something!');return}
+  const tx=document.getElementById('fbt').value.trim();
+  if(!tx&&starR===0){toast(LANGS[curLang].toastFbEmpty);return}
   document.getElementById('fbt').value='';
   document.querySelectorAll('.star').forEach(s=>s.classList.remove('lit'));starR=0;
-  toast('✅ Feedback sent! Thank you 💖');
+  playSfx('send');
+  toast(LANGS[curLang].toastFbSent);
 }
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
+(function init(){
+  applyLang();
+  renderPet();
+  updStats();
+  speak(LANGS[curLang].petInitLine);
+  addMsg('ai', LANGS[curLang].chatWelcome);
+  setInterval(()=>{if(Math.random()<.15)pa('mood')},25000);
+  setInterval(()=>{if(Math.random()<.1)trigFlower()},40000);
+})();
 </script>
 </body>
 </html>
