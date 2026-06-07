@@ -3,174 +3,511 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Lonely Lighthouse | Your Safe Space</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Cute Pet & AI Companion</title>
     <style>
-        /* Immersive deep night gradient background */
+        /* Cute & Pastel Aesthetic Global Styles */
+        :root {
+            --bg-pastel: #FFF5F5;
+            --primary-accent: #FF6B6B;
+            --text-dark: #4A4A4A;
+            --card-white: #FFFFFF;
+            --border-light: #FFE3E3;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-dark);
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            background: linear-gradient(180deg, #1a1c29 0%, #2a2b40 50%, #3d3b54 100%);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            overflow-x: hidden;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
-        /* Frosted glass/Glassmorphism effect */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px rgba(255, 255, 255, 0.1) solid;
+
+        /* Smartphone Container Frame */
+        .phone-container {
+            width: 375px;
+            height: 667px;
+            background-color: var(--bg-pastel);
+            border-radius: 32px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+            border: 8px solid #2d3748;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
-        /* Smooth breathing animation for anxiety relief */
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); opacity: 0.4; filter: blur(20px); }
-            50% { transform: scale(1.15); opacity: 0.7; filter: blur(30px); }
+
+        /* Screen Dynamic Content Wrapper */
+        .screen-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
         }
-        .breathing-glow {
-            animation: breathe 7s ease-in-out infinite;
+
+        .screen-content.active {
+            display: flex;
+            flex-direction: column;
         }
-        /* Star rising animation */
-        @keyframes floatUp {
-            0% { transform: translateY(20px) scale(0.8); opacity: 0; }
-            20% { opacity: 1; }
-            100% { transform: translateY(-120px) scale(0.5); opacity: 0; }
+
+        /* 3-Button Bottom Navigation Bar */
+        .bottom-nav {
+            height: 65px;
+            background-color: var(--card-white);
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            width: 100%;
         }
-        .floating-star {
-            animation: floatUp 4s ease-out forwards;
+
+        .nav-btn {
+            flex: 1;
+            border: none;
+            background: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #888888;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn span {
+            font-size: 18px;
+            margin-bottom: 2px;
+        }
+
+        .nav-btn.active {
+            color: var(--primary-accent);
+            background-color: #FFF0F0;
+        }
+
+        /* Screen 1: Chat Styles */
+        .chat-header {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 8px;
+        }
+
+        .chat-log {
+            flex: 1;
+            background-color: var(--card-white);
+            border-radius: 16px;
+            padding: 12px;
+            overflow-y: auto;
+            font-size: 13px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-light);
+        }
+
+        .chat-msg {
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .msg-user { color: #4A90E2; font-weight: 600; }
+        .msg-ai { color: #E056FD; font-weight: 600; }
+
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 10px 16px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        /* Screen 2: Pet Styles */
+        .mood-tracker-container {
+            margin-bottom: 20px;
+        }
+
+        .mood-title {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+.mood-row {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--card-white);
+            padding: 10px;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(255,107,107,0.05);
+        }
+
+        .mood-emoji-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            border: none;
+            background: none;
+            flex: 1;
+            transition: transform 0.2s;
+        }
+
+        .mood-emoji-btn:hover {
+            transform: scale(1.15);
+        }
+
+        .mood-emoji-btn .emoji { font-size: 22px; }
+        .mood-emoji-btn .label { font-size: 10px; margin-top: 2px; color: #777; }
+
+        .pet-stage {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .pet-avatar {
+            font-size: 75px;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+        }
+
+        .pet-avatar:active {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .speech-bubble {
+            background-color: var(--card-white);
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            max-width: 80%;
+            border: 1px solid var(--border-light);
+            animation: float 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-5px); }
+        }
+
+        /* Components: General UI Elements */
+        .btn-custom {
+            background-color: var(--primary-accent);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 18px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255,107,107,0.3);
+            transition: background 0.2s;
+        }
+
+        .btn-custom:hover { background-color: #ff5252; }
+
+        /* Screen 3: Settings Styles */
+        .settings-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .setting-item {
+            background-color: var(--card-white);
+            padding: 14px;
+            border-radius: 14px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-light);
+        }
+
+        .setting-item label { font-size: 14px; font-weight: 500; }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: var(--primary-accent); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        select, textarea {
+            width: 100%;
+            border: 1px solid var(--border-light);
+            background-color: var(--card-white);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            margin-top: 6px;
+        }
+textarea { height: 70px; resize: none; }
+
+        .toast {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            z-index: 100;
+            display: none;
+            text-align: center;
         }
     </style>
 </head>
-<body class="text-slate-200 min-h-screen flex flex-col justify-between p-6 relative">
+<body>
 
-    <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-        <div id="glowCircle" class="w-80 h-80 bg-amber-200/20 rounded-full breathing-glow"></div>
+    <div class="phone-container">
+        <!-- Notification Overlay Toast Container -->
+        <div class="toast" id="app-toast">Notification</div>
+
+        <!-- SCREEN 1: CHAT CHANNELS -->
+        <div id="screen-chat" class="screen-content">
+            <div class="chat-header">Gemini 3.5 Flash Hub</div>
+            <div class="chat-log" id="chat-box">
+                <div class="chat-msg"><span class="msg-ai">Gemini 3.5 Flash:</span> Hello! I am your smart companion. Chat with me or say "generate image" to try multimodal magic!</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Type a message...">
+                <button class="btn-custom" onclick="sendChatMessage()">Send</button>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: PET STAGE -->
+        <div id="screen-pet" class="screen-content active">
+            <!-- Mood Tracker System Bar Context -->
+            <div class="mood-tracker-container">
+                <div class="mood-title">How are you feeling today?</div>
+                <div class="mood-row">
+                    <button class="mood-emoji-btn" onclick="logUserMood('Happy')">
+                        <span class="emoji">😊</span><span class="label">Happy</span>
+                    </button>
+                    <button class="mood-emoji-btn" onclick="logUserMood('Sad')">
+                        <span class="emoji">😢</span><span class="label">Sad</span>
+                    </button>
+                    <button class="mood-emoji-btn" onclick="logUserMood('Angry')">
+                        <span class="emoji">😡</span><span class="label">Angry</span>
+                    </button>
+                    <button class="mood-emoji-btn" onclick="logUserMood('Tired')">
+                        <span class="emoji">😴</span><span class="label">Tired</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Pet Rendering Workspace -->
+            <div class="pet-stage">
+                <div class="speech-bubble" id="pet-dialogue">Hi! Tap me to play!</div>
+                <div class="pet-avatar" id="pet-graphic" onclick="interactWithPet()">🐱</div>
+                <div id="gift-area"></div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: CONFIGURATION SETTINGS -->
+        <div id="screen-settings" class="screen-content">
+            <div class="settings-header">Settings</div>
+            
+            <div class="setting-item">
+                <label>Sound Effects & BGM</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked onchange="showToast('Audio configuration updated')">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <label style="font-size:14px; font-weight:500;">App Language</label>
+                <select onchange="showToast('Language updated successfully')">
+                    <option>English</option>
+                    <option>简体中文</option>
+                    <option>Español</option>
+                    <option>日本語</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 14px; margin-top:10px;">
+                <label style="font-size:14px; font-weight:500;">Feedback & Suggestions</label>
+<textarea id="feedback-text" placeholder="Encountered bugs or have suggestions? Let us know!"></textarea>
+                <button class="btn-custom" style="width:100%; margin-top:8px;" onclick="submitFeedback()">Submit Feedback</button>
+            </div>
+        </div>
+
+        <!-- Linear Bottom Tab Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-btn" id="nav-chat" onclick="switchTab('chat')">
+                <span>💬</span>Chat
+            </button>
+            <button class="nav-btn active" id="nav-pet" onclick="switchTab('pet')">
+                <span>🐾</span>Pet
+            </button>
+            <button class="nav-btn" id="nav-settings" onclick="switchTab('settings')">
+                <span>⚙️</span>Settings
+            </button>
+        </nav>
     </div>
 
-    <header class="w-full max-w-4xl mx-auto flex justify-between items-center z-10">
-        <div class="flex items-center space-x-3">
-            <span class="text-2xl">🌙</span>
-            <div>
-                <h1 class="text-xl font-light tracking-wide text-amber-100/90">The Lonely Lighthouse</h1>
-                <p class="text-xs text-slate-400">A light is always left on for you here tonight.</p>
-            </div>
-        </div>
-        <div class="text-xs glass-panel px-3 py-1.5 rounded-full text-slate-300">
-            🟢 1,204 kindred souls are watching the stars with you right now.
-        </div>
-    </header>
-
-    <main class="w-full max-w-lg mx-auto my-auto z-10 flex flex-col items-center space-y-8">
-        
-        <div class="text-center space-y-2">
-            <p id="mainPrompt" class="text-lg font-light text-amber-50/90 transition-all duration-1000">Whatever makes you feel lonely right now, whisper it here.</p>
-            <p class="text-xs text-slate-400">It will turn into a star. No judgments, just release.</p>
-        </div>
-
-        <div class="w-full glass-panel p-6 rounded-3xl shadow-xl space-y-4 relative">
-            <div id="starContainer" class="absolute -top-12 left-1/2 transform -translate-x-1/2 pointer-events-none"></div>
-
-            <textarea id="whisperInput" rows="3" 
-                class="w-full bg-transparent border-none resize-none focus:outline-none text-slate-100 placeholder-slate-500 text-sm leading-relaxed"
-                placeholder="Try writing: 'Coming home to an empty room tonight felt a bit heavy...'"></textarea>
-            
-            <div class="flex justify-between items-center pt-2 border-t border-white/5">
-                <span class="text-xs text-slate-500" id="charCount">0 / 200</span>
-                <button id="sendBtn" onclick="sendWhisper()" 
-                    class="bg-amber-100/10 hover:bg-amber-100/20 text-amber-200 text-xs px-5 py-2 rounded-full transition-all tracking-wider font-light">
-                    Release to Stars ✨
-                </button>
-            </div>
-        </div>
-
-        <div class="flex space-x-3 text-xs">
-            <button onclick="toggleAmbient('rain', this)" class="glass-panel px-4 py-2 rounded-full hover:bg-white/10 transition">
-                🌧️ Soft Rain: <span class="text-slate-400">Off</span>
-            </button>
-            <button onclick="toggleAmbient('fire', this)" class="glass-panel px-4 py-2 rounded-full hover:bg-white/10 transition">
-                🔥 Cozy Campfire: <span class="text-slate-400">Off</span>
-            </button>
-        </div>
-
-    </main>
-
-    <footer class="w-full max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-white/5 z-10 text-xs text-slate-500">
-        <div>
-            <span>This is a quiet sanctuary for your thoughts.</span>
-            <a href="#" class="underline hover:text-slate-400 ml-1">Need immediate support? View professional helplines ↗</a>
-        </div>
-        <div class="tracking-widest font-light">
-            YOU ARE NOT ALONE · 2026
-        </div>
-    </footer>
-
     <script>
-        const whisperInput = document.getElementById('whisperInput');
-        const charCount = document.getElementById('charCount');
-        const mainPrompt = document.getElementById('mainPrompt');
-        const glowCircle = document.getElementById('glowCircle');
-        const starContainer = document.getElementById('starContainer');
+        // Virtual Pet Engine Initialization Constants
+        const petPool = [
+            { icon: '🐱', name: 'Cute Kitten' },
+            { icon: '🦖', name: 'Cute Dinosaur' },
+            { icon: '🐹', name: 'Cute Capybara' },
+            { icon: '🐨', name: 'Cute Koala' }
+        ];
 
-        // Character Counter
-        whisperInput.addEventListener('input', (e) => {
-            const len = e.target.value.length;
-            charCount.textContent = ${len} / 200;
-            if(len > 200) {
-                whisperInput.value = whisperInput.value.slice(0, 200);
+        const moodStatements = [
+            "I'm feeling incredibly happy and bouncy today!",
+            "Yawn... I feel a bit sleepy. Can we take a nap?",
+            "My tummy is rumbling! Is it snack time yet?",
+            "I'm feeling very curious! Let's explore!"
+        ];
+
+        let activePet = {};
+
+        // Randomly roll configurations on boot
+        function initApp() {
+            const randomIndex = Math.floor(Math.random() * petPool.length);
+            activePet = petPool[randomIndex];
+            document.getElementById('pet-graphic').innerText = activePet.icon;
+            document.getElementById('pet-dialogue').innerText = Hi there! I am your ${activePet.name}! ✨;
+        }
+
+        // Tab View Router Engine
+        function switchTab(targetTab) {
+            document.querySelectorAll('.screen-content').forEach(screen => screen.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(screen-${targetTab}).classList.add('active');
+            document.getElementById(nav-${targetTab}).classList.add('active');
+        }
+
+        // Screen 1: Chat Prompt Handling
+        function sendChatMessage() {
+            const inputField = document.getElementById('chat-input');
+            const chatBox = document.getElementById('chat-box');
+            const rawMessage = inputField.value.trim();
+
+            if (!rawMessage) return;
+
+            // Render user line
+            chatBox.innerHTML += <div class="chat-msg"><span class="msg-user">You:</span> ${rawMessage}</div>;
+            inputField.value = '';
+
+            // Handle Context Processing Response Mockup
+            setTimeout(() => {
+                const standardizedText = rawMessage.toLowerCase();
+                let reply = "";
+                
+                if (standardizedText.includes('image')  standardizedText.includes('generate')  standardizedText.includes('draw')) {
+                    reply = <span class="msg-ai">Gemini 3.5 Flash:</span> Here is your generated creation based on your prompt! 🎨<br><span style="font-size:40px; display:block; text-align:center; margin-top:8px;">🌌🌈✨</span>;
+                } else {
+                    reply = <span class="msg-ai">Gemini 3.5 Flash:</span> (Auto-Reply) I evaluated your message contextually and am responding immediately with high efficiency!;
+                }
+
+                chatBox.innerHTML += <div class="chat-msg">${reply}</div>;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 750);
+        }
+
+        // Screen 2: Interaction Engines
+        function logUserMood(moodName) {
+            showToast(Your ${activePet.name} noticed you feel ${moodName}!);
+        }
+function interactWithPet() {
+            const dialogBox = document.getElementById('pet-dialogue');
+            const giftArea = document.getElementById('gift-area');
+            giftArea.innerHTML = ''; // Reset any uncollected assets
+            
+            const actionRoll = Math.random() < 0.5 ? 'mood' : 'gift';
+
+            if (actionRoll === 'mood') {
+                const randomMoodText = moodStatements[Math.floor(Math.random() * moodStatements.length)];
+                dialogBox.innerText = randomMoodText;
+            } else {
+                dialogBox.innerText = 🌸 Look! I picked a beautiful wildflower just for you!;
+                giftArea.innerHTML = <button class="btn-custom" style="margin-top:10px; animation: bounce 0.5s infinite alternate;" onclick="acceptFlowerGift()">Accept Gift 🎁</button>;
             }
+        }
+
+        function acceptFlowerGift() {
+            document.getElementById('gift-area').innerHTML = '';
+            document.getElementById('pet-dialogue').innerText = "Hehe! I'm glad you liked my present! ❤️";
+            showToast("Flower accepted successfully!");
+        }
+
+        // Screen 3: Submission Systems
+        function submitFeedback() {
+            const notes = document.getElementById('feedback-text');
+            if (notes.value.trim() !== "") {
+                showToast("Feedback submitted! Thank you.");
+                notes.value = "";
+            }
+        }
+
+        // Utility Systems UI Alerts
+        function showToast(msg) {
+            const alertNode = document.getElementById('app-toast');
+            alertNode.innerText = msg;
+            alertNode.style.display = 'block';
+            setTimeout(() => { alertNode.style.display = 'none'; }, 2000);
+        }
+
+        // Map system listeners for chat layout keys
+        document.getElementById('chat-input')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendChatMessage();
         });
 
-        // Handle text submission
-        function sendWhisper() {
-            const text = whisperInput.value.trim();
-            if (!text) return;
-
-            // 1. Trigger the visual star animation
-            createFloatingStar();
-
-            // 2. Clear input fields
-            whisperInput.value = '';
-            charCount.textContent = '0 / 200';
-
-            // 3. Cycle through comforting system replies
-            mainPrompt.style.opacity = '0';
-            setTimeout(() => {
-                const replies = [
-                    "It's heard. The universe is vast, but right now, this space is yours.",
-                    "The world is loud, but it's quiet here. You are doing just fine. Rest well.",
-                    "The words you couldn't say out loud are safe with the night sky now. 🌙",
-                    "Leave the loneliness with the stars. Let the warm breeze carry you forward."
-                ];
-                mainPrompt.textContent = replies[Math.floor(Math.random() * replies.length)];
-                mainPrompt.style.opacity = '1';
-                
-                // Transition the glow circle to a warmer tone as dynamic feedback
-                glowCircle.style.backgroundColor = 'rgba(253, 230, 138, 0.35)';
-            }, 1000);
-        }
-
-        // Dynamically inject floating star elements
-        function createFloatingStar() {
-            const star = document.createElement('div');
-            star.className = 'floating-star text-2xl text-amber-200 absolute';
-            star.textContent = '✨';
-            starContainer.appendChild(star);
-
-            // Housekeeping: Remove element after animation to prevent memory leaks
-            setTimeout(() => {
-                star.remove();
-            }, 4000);
-        }
-
-        // Simulate ambient audio toggle states
-        function toggleAmbient(type, btn) {
-            const statusSpan = btn.querySelector('span');
-            if (statusSpan.textContent === 'Off') {
-                statusSpan.textContent = 'On';
-                statusSpan.className = 'text-amber-300';
-                // In production, instantiate and play your looped Web Audio API nodes here
-            } else {
-                statusSpan.textContent = 'Off';
-                statusSpan.className = 'text-slate-400';
-            }
-        }
+        // Initialize instance on render completion
+        window.onload = initApp;
     </script>
 </body>
 </html>
