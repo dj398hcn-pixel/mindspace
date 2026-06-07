@@ -1,513 +1,1308 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cute Pet & AI Companion</title>
-    <style>
-        /* Cute & Pastel Aesthetic Global Styles */
-        :root {
-            --bg-pastel: #FFF5F5;
-            --primary-accent: #FF6B6B;
-            --text-dark: #4A4A4A;
-            --card-white: #FFFFFF;
-            --border-light: #FFE3E3;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PetPal ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fdf6ff;
+    --surface: #ffffff;
+    --surface2: #f5eeff;
+    --accent: #b07af5;
+    --accent2: #ff8fc8;
+    --accent3: #ffd166;
+    --text: #2d1b4e;
+    --text-muted: #8b6fad;
+    --border: #e8d8ff;
+    --nav-h: 68px;
+    --radius: 20px;
+    --shadow: 0 4px 24px rgba(176,122,245,0.13);
+  }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text-dark);
-            -webkit-tap-highlight-color: transparent;
-        }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+    overflow-x: hidden;
+  }
 
-        /* Smartphone Container Frame */
-        .phone-container {
-            width: 375px;
-            height: 667px;
-            background-color: var(--bg-pastel);
-            border-radius: 32px;
-            box-shadow: 0 16px 40px rgba(0,0,0,0.15);
-            border: 8px solid #2d3748;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+  /* ===== BACKGROUND BLOBS ===== */
+  .bg-blobs {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0; overflow: hidden;
+  }
+  .blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(60px); opacity: 0.22;
+    animation: blobFloat 8s ease-in-out infinite alternate;
+  }
+  .blob1 { width: 260px; height: 260px; background: #b07af5; top: -60px; left: -80px; }
+  .blob2 { width: 200px; height: 200px; background: #ff8fc8; top: 30%; right: -60px; animation-delay: 2s; }
+  .blob3 { width: 180px; height: 180px; background: #ffd166; bottom: 20%; left: -40px; animation-delay: 4s; }
+  @keyframes blobFloat { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(20px,30px) scale(1.08)} }
 
-        /* Screen Dynamic Content Wrapper */
-        .screen-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: none;
-        }
+  /* ===== PAGES ===== */
+  #app { position: relative; z-index: 1; height: 100vh; display: flex; flex-direction: column; }
 
-        .screen-content.active {
-            display: flex;
-            flex-direction: column;
-        }
+  .page {
+    display: none; flex: 1; overflow-y: auto; padding-bottom: var(--nav-h);
+    scroll-behavior: smooth;
+  }
+  .page.active { display: flex; flex-direction: column; }
 
-        /* 3-Button Bottom Navigation Bar */
-        .bottom-nav {
-            height: 65px;
-            background-color: var(--card-white);
-            border-top: 1px solid var(--border-light);
-            display: flex;
-            width: 100%;
-        }
+  /* ===== NAV ===== */
+  nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    height: var(--nav-h);
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(16px);
+    border-top: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: space-around;
+    z-index: 100;
+    box-shadow: 0 -4px 24px rgba(176,122,245,0.10);
+  }
 
-        .nav-btn {
-            flex: 1;
-            border: none;
-            background: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            color: #888888;
-            transition: all 0.2s ease;
-        }
+  .nav-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    border: none; background: none; cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px; font-weight: 700;
+    color: var(--text-muted);
+    padding: 8px 20px;
+    border-radius: 16px;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .nav-btn .nav-icon {
+    font-size: 26px; transition: transform 0.2s;
+    display: block;
+  }
+  .nav-btn.active { color: var(--accent); }
+  .nav-btn.active .nav-icon { transform: scale(1.18); }
+  .nav-btn.active::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+  }
 
-        .nav-btn span {
-            font-size: 18px;
-            margin-bottom: 2px;
-        }
+  /* ===== HEADER ===== */
+  .page-header {
+    padding: 54px 20px 16px;
+    text-align: center;
+  }
+  .page-header h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 26px; font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .page-header p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
 
-        .nav-btn.active {
-            color: var(--primary-accent);
-            background-color: #FFF0F0;
-        }
+  /* ===================== CHAT PAGE ===================== */
+  #page-chat {
+    padding: 0;
+  }
 
-        /* Screen 1: Chat Styles */
-        .chat-header {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 12px;
-            text-align: center;
-            border-bottom: 1px solid var(--border-light);
-            padding-bottom: 8px;
-        }
+  .chat-header {
+    padding: 54px 20px 12px;
+    background: linear-gradient(160deg, #f5eeff 0%, #fff0fa 100%);
+    border-bottom: 1.5px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+  }
+  .chat-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(176,122,245,0.35);
+  }
+  .chat-header-info h2 {
+    font-size: 16px; font-weight: 800; font-family: 'Baloo 2', cursive;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .chat-header-info p { font-size: 11px; color: var(--text-muted); }
+  .online-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: #4cde80; margin-right: 4px;
+    box-shadow: 0 0 0 2px #d4fbe5;
+  }
 
-        .chat-log {
-            flex: 1;
-            background-color: var(--card-white);
-            border-radius: 16px;
-            padding: 12px;
-            overflow-y: auto;
-            font-size: 13px;
-            margin-bottom: 12px;
-            border: 1px solid var(--border-light);
-        }
+  .chat-messages {
+    flex: 1; overflow-y: auto; padding: 16px 16px 8px;
+    display: flex; flex-direction: column; gap: 12px;
+    min-height: 0;
+  }
 
-        .chat-msg {
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
+  .msg {
+    display: flex; gap: 8px; align-items: flex-end;
+    animation: msgIn 0.3s ease;
+  }
+  @keyframes msgIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
 
-        .msg-user { color: #4A90E2; font-weight: 600; }
-        .msg-ai { color: #E056FD; font-weight: 600; }
+  .msg.user { flex-direction: row-reverse; }
 
-        .chat-input-area {
-            display: flex;
-            gap: 8px;
-        }
+  .msg-bubble {
+    max-width: 72%; padding: 10px 14px;
+    border-radius: 18px; font-size: 14px; line-height: 1.5;
+    word-break: break-word;
+  }
+  .msg.ai .msg-bubble {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-bottom-left-radius: 4px;
+    color: var(--text);
+    box-shadow: var(--shadow);
+  }
+  .msg.user .msg-bubble {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
 
-        .chat-input-area input {
-            flex: 1;
-            border: 1px solid var(--border-light);
-            border-radius: 20px;
-            padding: 10px 16px;
-            font-size: 13px;
-            outline: none;
-        }
+  .msg-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .msg.user .msg-avatar { background: linear-gradient(135deg, #ffd166, #ff8fc8); }
 
-        /* Screen 2: Pet Styles */
-        .mood-tracker-container {
-            margin-bottom: 20px;
-        }
+  .msg-img { max-width: 200px; border-radius: 14px; margin-top: 6px; display: block; }
 
-        .mood-title {
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            text-align: center;
-        }
-.mood-row {
-            display: flex;
-            justify-content: space-between;
-            background-color: var(--card-white);
-            padding: 10px;
-            border-radius: 16px;
-            box-shadow: 0 4px 10px rgba(255,107,107,0.05);
-        }
+  .typing-indicator { display: flex; gap: 5px; padding: 10px 14px; }
+  .typing-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent); opacity: 0.5;
+    animation: typingBounce 1.2s ease-in-out infinite;
+  }
+  .typing-dot:nth-child(2){animation-delay:.2s}
+  .typing-dot:nth-child(3){animation-delay:.4s}
+  @keyframes typingBounce {
+    0%,60%,100%{transform:translateY(0);opacity:0.5}
+    30%{transform:translateY(-6px);opacity:1}
+  }
 
-        .mood-emoji-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            border: none;
-            background: none;
-            flex: 1;
-            transition: transform 0.2s;
-        }
+  .chat-input-area {
+    padding: 10px 12px 12px;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(12px);
+    border-top: 1.5px solid var(--border);
+    display: flex; gap: 8px; align-items: flex-end;
+  }
+  .chat-input {
+    flex: 1; border: 1.5px solid var(--border);
+    border-radius: 20px; padding: 10px 14px;
+    font-family: 'Nunito', sans-serif; font-size: 14px;
+    background: var(--surface2); color: var(--text);
+    outline: none; resize: none; max-height: 100px;
+    transition: border-color 0.2s;
+    line-height: 1.4;
+  }
+  .chat-input:focus { border-color: var(--accent); }
 
-        .mood-emoji-btn:hover {
-            transform: scale(1.15);
-        }
+  .send-btn {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none; color: #fff; font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 14px rgba(176,122,245,0.4);
+  }
+  .send-btn:active { transform: scale(0.93); }
+  .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .mood-emoji-btn .emoji { font-size: 22px; }
-        .mood-emoji-btn .label { font-size: 10px; margin-top: 2px; color: #777; }
+  .img-btn {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--surface2); border: 1.5px solid var(--border);
+    font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.15s;
+  }
+  .img-btn:active { transform: scale(0.93); }
+    .api-notice {
+    background: #fff8e6; border: 1.5px solid #ffd166;
+    border-radius: 12px; padding: 10px 14px; margin: 12px 16px;
+    font-size: 12px; color: #7a5a00; line-height: 1.5;
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .api-key-row {
+    padding: 0 16px 12px;
+    display: flex; gap: 8px;
+  }
+  .api-key-input {
+    flex: 1; border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 9px 14px;
+    font-family: 'Nunito', sans-serif; font-size: 13px;
+    background: var(--surface2); color: var(--text); outline: none;
+    transition: border-color 0.2s;
+  }
+  .api-key-input:focus { border-color: var(--accent); }
+  .api-key-save {
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 14px; padding: 9px 16px;
+    font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700;
+    cursor: pointer; white-space: nowrap;
+  }
 
-        .pet-stage {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-        }
+  /* ===================== PET PAGE ===================== */
+  #page-pet { padding-bottom: calc(var(--nav-h) + 10px); }
 
-        .pet-avatar {
-            font-size: 75px;
-            cursor: pointer;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            user-select: none;
-        }
+  .mood-bar {
+    padding: 16px 12px 10px;
+    background: linear-gradient(160deg, #f5eeff 0%, #fff0fa 100%);
+    border-bottom: 1.5px solid var(--border);
+  }
+  .mood-bar h3 { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; font-weight: 700; text-align: center; letter-spacing: 0.5px; }
+  .emoji-row {
+    display: flex; gap: 6px; overflow-x: auto;
+    padding-bottom: 4px; scrollbar-width: none;
+    justify-content: center; flex-wrap: wrap;
+  }
+  .emoji-row::-webkit-scrollbar { display: none; }
 
-        .pet-avatar:active {
-            transform: scale(1.2) rotate(5deg);
-        }
+  .emoji-chip {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    background: var(--surface); border: 2px solid var(--border);
+    border-radius: 14px; padding: 6px 10px; cursor: pointer;
+    transition: all 0.18s; min-width: 52px; flex-shrink: 0;
+  }
+  .emoji-chip:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .emoji-chip.selected { border-color: var(--accent); background: #f5eeff; box-shadow: 0 2px 10px rgba(176,122,245,0.2); }
+  .emoji-chip span:first-child { font-size: 22px; }
+  .emoji-chip span:last-child { font-size: 9px; font-weight: 700; color: var(--text-muted); }
 
-        .speech-bubble {
-            background-color: var(--card-white);
-            padding: 12px 16px;
-            border-radius: 16px;
-            font-size: 14px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            max-width: 80%;
-            border: 1px solid var(--border-light);
-            animation: float 2s ease-in-out infinite alternate;
-        }
+  .pet-stage {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 20px 20px;
+    gap: 16px;
+  }
 
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            100% { transform: translateY(-5px); }
-        }
+  .pet-type-row {
+    display: flex; gap: 8px;
+  }
+  .pet-type-btn {
+    background: var(--surface); border: 2px solid var(--border);
+    border-radius: 12px; padding: 5px 12px;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    color: var(--text-muted); transition: all 0.15s;
+    font-family: 'Nunito', sans-serif;
+  }
+  .pet-type-btn.active { border-color: var(--accent); color: var(--accent); background: #f5eeff; }
 
-        /* Components: General UI Elements */
-        .btn-custom {
-            background-color: var(--primary-accent);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 10px 18px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(255,107,107,0.3);
-            transition: background 0.2s;
-        }
+  .pet-display {
+    width: 200px; height: 200px;
+    position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .pet-scene {
+    width: 200px; height: 200px;
+    background: linear-gradient(160deg, #f0e6ff, #ffe0f5);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 32px rgba(176,122,245,0.22), inset 0 1px 0 rgba(255,255,255,0.6);
+    position: relative; overflow: visible;
+  }
+  .pet-svg { width: 130px; height: 130px; animation: petIdle 3s ease-in-out infinite; }
+  @keyframes petIdle {
+    0%,100%{transform:translateY(0) rotate(-1deg)}
+    50%{transform:translateY(-8px) rotate(1deg)}
+  }
+  .pet-svg.happy { animation: petHappy 0.6s ease-in-out 3; }
+  @keyframes petHappy {
+    0%,100%{transform:translateY(0) scale(1)}
+    50%{transform:translateY(-16px) scale(1.12)}
+  }
 
-        .btn-custom:hover { background-color: #ff5252; }
+  .speech-bubble {
+    background: var(--surface); border: 2px solid var(--border);
+    border-radius: 18px; border-bottom-left-radius: 4px;
+    padding: 12px 16px; max-width: 280px;
+    font-size: 14px; line-height: 1.5; text-align: center;
+      box-shadow: var(--shadow); position: relative;
+    animation: bubbleIn 0.4s cubic-bezier(.17,.67,.41,1.4);
+    min-height: 50px; display: flex; align-items: center; justify-content: center;
+  }
+  @keyframes bubbleIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:none} }
 
-        /* Screen 3: Settings Styles */
-        .settings-header {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
+  .flower-gift {
+    position: absolute; top: -30px; right: -20px;
+    font-size: 40px; animation: flowerFloat 1s ease-out forwards;
+    cursor: pointer;
+  }
+  @keyframes flowerFloat {
+    0%{opacity:0;transform:translateY(20px) rotate(-20deg)}
+    60%{opacity:1;transform:translateY(-10px) rotate(10deg)}
+    100%{opacity:1;transform:translateY(0) rotate(0)}
+  }
 
-        .setting-item {
-            background-color: var(--card-white);
-            padding: 14px;
-            border-radius: 14px;
-            margin-bottom: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid var(--border-light);
-        }
+  .pet-actions {
+    display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+  }
+  .pet-action-btn {
+    background: var(--surface); border: 2px solid var(--border);
+    border-radius: 50px; padding: 9px 16px;
+    font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 700;
+    cursor: pointer; color: var(--text); transition: all 0.15s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .pet-action-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+  .pet-action-btn:active { transform: scale(0.95); }
 
-        .setting-item label { font-size: 14px; font-weight: 500; }
+  .pet-stats {
+    width: 100%; background: var(--surface);
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 14px 16px; display: flex; gap: 20px; justify-content: center;
+    box-shadow: var(--shadow);
+  }
+  .stat { text-align: center; }
+  .stat-label { font-size: 10px; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+  .stat-val { font-size: 20px; }
 
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-        }
+  /* ===================== SETTINGS PAGE ===================== */
+  .settings-content { padding: 60px 16px 20px; display: flex; flex-direction: column; gap: 14px; }
 
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .settings-section {
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .settings-section-title {
+    padding: 12px 16px; font-size: 11px; font-weight: 800;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--surface2);
+    border-bottom: 1.5px solid var(--border);
+  }
 
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #ccc;
-            transition: .3s;
-            border-radius: 24px;
-        }
+  .settings-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row-left { display: flex; align-items: center; gap: 10px; }
+  .settings-row-icon { font-size: 22px; width: 28px; text-align: center; }
+  .settings-row-label { font-size: 14px; font-weight: 700; }
+  .settings-row-sub { font-size: 11px; color: var(--text-muted); }
 
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px; width: 18px;
-            left: 3px; bottom: 3px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-        }
+  /* Toggle */
+  .toggle {
+    width: 46px; height: 26px; border-radius: 13px;
+    background: var(--border); position: relative; cursor: pointer;
+    transition: background 0.25s; flex-shrink: 0;
+    border: none;
+  }
+  .toggle.on { background: var(--accent); }
+  .toggle::after {
+    content: ''; position: absolute;
+    top: 3px; left: 3px; width: 20px; height: 20px;
+    border-radius: 50%; background: #fff;
+    transition: transform 0.25s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .toggle.on::after { transform: translateX(20px); }
 
-        input:checked + .slider { background-color: var(--primary-accent); }
-        input:checked + .slider:before { transform: translateX(20px); }
+  /* Select */
+  .settings-select {
+    border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 6px 10px; font-family: 'Nunito', sans-serif;
+    font-size: 13px; font-weight: 700; color: var(--text);
+    background: var(--surface2); outline: none; cursor: pointer;
+  }
 
-        select, textarea {
-            width: 100%;
-            border: 1px solid var(--border-light);
-            background-color: var(--card-white);
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 13px;
-            outline: none;
-            margin-top: 6px;
-        }
-textarea { height: 70px; resize: none; }
+  /* Volume slider */
+  .vol-slider {
+    width: 110px; height: 4px; border-radius: 2px;
+    background: var(--border); outline: none; cursor: pointer;
+    -webkit-appearance: none; appearance: none;
+  }
+  .vol-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--accent); cursor: pointer;
+  }
+    /* Feedback */
+  .feedback-area {
+    width: 100%; height: 90px; border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 10px 14px;
+    font-family: 'Nunito', sans-serif; font-size: 13px;
+    background: var(--surface2); color: var(--text); outline: none;
+    resize: none;
+  }
+  .feedback-area:focus { border-color: var(--accent); }
+  .feedback-send {
+    width: 100%; padding: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; border: none; border-radius: 14px;
+    font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 800;
+    cursor: pointer; margin-top: 4px; transition: opacity 0.15s;
+    letter-spacing: 0.3px;
+  }
+  .feedback-send:active { opacity: 0.85; }
 
-        .toast {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0,0,0,0.8);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            z-index: 100;
-            display: none;
-            text-align: center;
-        }
-    </style>
+  .toast {
+    position: fixed; top: 60px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    background: var(--text); color: #fff; padding: 10px 20px;
+    border-radius: 50px; font-size: 13px; font-weight: 700;
+    opacity: 0; transition: all 0.3s; z-index: 999; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Stars rating */
+  .star-row { display: flex; gap: 4px; }
+  .star {
+    font-size: 24px; cursor: pointer; transition: transform 0.15s;
+    filter: grayscale(1);
+  }
+  .star.lit { filter: none; }
+  .star:hover { transform: scale(1.2); }
+
+  .version-text {
+    text-align: center; font-size: 12px; color: var(--text-muted);
+    padding: 10px; letter-spacing: 0.5px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
 </head>
 <body>
 
-    <div class="phone-container">
-        <!-- Notification Overlay Toast Container -->
-        <div class="toast" id="app-toast">Notification</div>
+<div class="bg-blobs">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+</div>
 
-        <!-- SCREEN 1: CHAT CHANNELS -->
-        <div id="screen-chat" class="screen-content">
-            <div class="chat-header">Gemini 3.5 Flash Hub</div>
-            <div class="chat-log" id="chat-box">
-                <div class="chat-msg"><span class="msg-ai">Gemini 3.5 Flash:</span> Hello! I am your smart companion. Chat with me or say "generate image" to try multimodal magic!</div>
-            </div>
-            <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Type a message...">
-                <button class="btn-custom" onclick="sendChatMessage()">Send</button>
-            </div>
-        </div>
+<div id="app">
 
-        <!-- SCREEN 2: PET STAGE -->
-        <div id="screen-pet" class="screen-content active">
-            <!-- Mood Tracker System Bar Context -->
-            <div class="mood-tracker-container">
-                <div class="mood-title">How are you feeling today?</div>
-                <div class="mood-row">
-                    <button class="mood-emoji-btn" onclick="logUserMood('Happy')">
-                        <span class="emoji">😊</span><span class="label">Happy</span>
-                    </button>
-                    <button class="mood-emoji-btn" onclick="logUserMood('Sad')">
-                        <span class="emoji">😢</span><span class="label">Sad</span>
-                    </button>
-                    <button class="mood-emoji-btn" onclick="logUserMood('Angry')">
-                        <span class="emoji">😡</span><span class="label">Angry</span>
-                    </button>
-                    <button class="mood-emoji-btn" onclick="logUserMood('Tired')">
-                        <span class="emoji">😴</span><span class="label">Tired</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Main Pet Rendering Workspace -->
-            <div class="pet-stage">
-                <div class="speech-bubble" id="pet-dialogue">Hi! Tap me to play!</div>
-                <div class="pet-avatar" id="pet-graphic" onclick="interactWithPet()">🐱</div>
-                <div id="gift-area"></div>
-            </div>
-        </div>
-
-        <!-- SCREEN 3: CONFIGURATION SETTINGS -->
-        <div id="screen-settings" class="screen-content">
-            <div class="settings-header">Settings</div>
-            
-            <div class="setting-item">
-                <label>Sound Effects & BGM</label>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked onchange="showToast('Audio configuration updated')">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div style="margin-bottom: 14px;">
-                <label style="font-size:14px; font-weight:500;">App Language</label>
-                <select onchange="showToast('Language updated successfully')">
-                    <option>English</option>
-                    <option>简体中文</option>
-                    <option>Español</option>
-                    <option>日本語</option>
-                </select>
-            </div>
-
-            <div style="margin-bottom: 14px; margin-top:10px;">
-                <label style="font-size:14px; font-weight:500;">Feedback & Suggestions</label>
-<textarea id="feedback-text" placeholder="Encountered bugs or have suggestions? Let us know!"></textarea>
-                <button class="btn-custom" style="width:100%; margin-top:8px;" onclick="submitFeedback()">Submit Feedback</button>
-            </div>
-        </div>
-
-        <!-- Linear Bottom Tab Navigation -->
-        <nav class="bottom-nav">
-            <button class="nav-btn" id="nav-chat" onclick="switchTab('chat')">
-                <span>💬</span>Chat
-            </button>
-            <button class="nav-btn active" id="nav-pet" onclick="switchTab('pet')">
-                <span>🐾</span>Pet
-            </button>
-            <button class="nav-btn" id="nav-settings" onclick="switchTab('settings')">
-                <span>⚙️</span>Settings
-            </button>
-        </nav>
+  <!-- ===== CHAT PAGE ===== -->
+  <div id="page-chat" class="page active">
+    <div class="chat-header">
+      <div class="chat-avatar">🤖</div>
+      <div class="chat-header-info">
+        <h2>PetPal AI</h2>
+        <p><span class="online-dot"></span>Powered by Gemini 2.0 Flash · online</p>
+      </div>
     </div>
 
-    <script>
-        // Virtual Pet Engine Initialization Constants
-        const petPool = [
-            { icon: '🐱', name: 'Cute Kitten' },
-            { icon: '🦖', name: 'Cute Dinosaur' },
-            { icon: '🐹', name: 'Cute Capybara' },
-            { icon: '🐨', name: 'Cute Koala' }
-        ];
+    <div class="api-notice">
+      <span>⚠️</span>
+      <div>Enter your <b>Gemini API key</b> below to enable AI chat &amp; image generation. Get one free at <b>aistudio.google.com</b>.</div>
+    </div>
+    <div class="api-key-row">
+      <input id="apiKeyInput" class="api-key-input" type="password" placeholder="Paste your Gemini API key…">
+      <button class="api-key-save" onclick="saveApiKey()">Save</button>
+    </div>
 
-        const moodStatements = [
-            "I'm feeling incredibly happy and bouncy today!",
-            "Yawn... I feel a bit sleepy. Can we take a nap?",
-            "My tummy is rumbling! Is it snack time yet?",
-            "I'm feeling very curious! Let's explore!"
-        ];
+    <div class="chat-messages" id="chatMessages">
+      <!-- Welcome message -->
+    </div>
 
-        let activePet = {};
+    <div class="chat-input-area">
+      <button class="img-btn" id="imgBtn" title="Generate image" onclick="triggerImageGen()">🎨</button>
+      <textarea class="chat-input" id="chatInput" placeholder="Say something…" rows="1"
+        oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
 
-        // Randomly roll configurations on boot
-        function initApp() {
-            const randomIndex = Math.floor(Math.random() * petPool.length);
-            activePet = petPool[randomIndex];
-            document.getElementById('pet-graphic').innerText = activePet.icon;
-            document.getElementById('pet-dialogue').innerText = Hi there! I am your ${activePet.name}! ✨;
-        }
+  <!-- ===== PET PAGE ===== -->
+  <div id="page-pet" class="page">
+    <div class="mood-bar">
+      <h3>HOW ARE YOU FEELING TODAY?</h3>
+      <div class="emoji-row" id="emojiRow"></div>
+    </div>
 
-        // Tab View Router Engine
-        function switchTab(targetTab) {
-            document.querySelectorAll('.screen-content').forEach(screen => screen.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    <div class="pet-stage">
+      <!-- Pet type selector -->
+      <div class="pet-type-row" id="petTypeRow"></div>
 
-            document.getElementById(screen-${targetTab}).classList.add('active');
-            document.getElementById(nav-${targetTab}).classList.add('active');
-        }
+      <!-- Pet display -->
+      <div class="pet-display">
+        <div class="pet-scene" id="petScene">
+          <div id="petSvgContainer"></div>
+          <div class="flower-gift" id="flowerGift" style="display:none" onclick="acceptFlower()"></div>
+        </div>
+      </div>
 
-        // Screen 1: Chat Prompt Handling
-        function sendChatMessage() {
-            const inputField = document.getElementById('chat-input');
-            const chatBox = document.getElementById('chat-box');
-            const rawMessage = inputField.value.trim();
+      <!-- Speech bubble -->
+      <div class="speech-bubble" id="speechBubble">
+        <span id="speechText">Hello! Tap me or use the buttons below 🌟</span>
+      </div>
+        <!-- Actions -->
+      <div class="pet-actions">
+        <button class="pet-action-btn" onclick="petAction('pet')">🤗 Pet</button>
+        <button class="pet-action-btn" onclick="petAction('feed')">🍬 Feed</button>
+        <button class="pet-action-btn" onclick="petAction('play')">🎾 Play</button>
+        <button class="pet-action-btn" onclick="petAction('mood')">💬 Mood</button>
+        <button class="pet-action-btn" onclick="triggerFlower()">🌸 Gift</button>
+      </div>
 
-            if (!rawMessage) return;
+      <!-- Stats -->
+      <div class="pet-stats">
+        <div class="stat"><div class="stat-label">Happiness</div><div class="stat-val" id="statHappy">😊</div></div>
+        <div class="stat"><div class="stat-label">Energy</div><div class="stat-val" id="statEnergy">⚡</div></div>
+        <div class="stat"><div class="stat-label">Love</div><div class="stat-val" id="statLove">💖</div></div>
+      </div>
+    </div>
+  </div>
 
-            // Render user line
-            chatBox.innerHTML += <div class="chat-msg"><span class="msg-user">You:</span> ${rawMessage}</div>;
-            inputField.value = '';
+  <!-- ===== SETTINGS PAGE ===== -->
+  <div id="page-settings" class="page">
+    <div class="settings-content">
+      <div style="text-align:center;padding:0 0 6px">
+        <div style="font-size:40px">⚙️</div>
+        <div style="font-family:'Baloo 2',cursive;font-size:22px;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">Settings</div>
+      </div>
 
-            // Handle Context Processing Response Mockup
-            setTimeout(() => {
-                const standardizedText = rawMessage.toLowerCase();
-                let reply = "";
-                
-                if (standardizedText.includes('image')  standardizedText.includes('generate')  standardizedText.includes('draw')) {
-                    reply = <span class="msg-ai">Gemini 3.5 Flash:</span> Here is your generated creation based on your prompt! 🎨<br><span style="font-size:40px; display:block; text-align:center; margin-top:8px;">🌌🌈✨</span>;
-                } else {
-                    reply = <span class="msg-ai">Gemini 3.5 Flash:</span> (Auto-Reply) I evaluated your message contextually and am responding immediately with high efficiency!;
-                }
+      <!-- Sound -->
+      <div class="settings-section">
+        <div class="settings-section-title">🎵 Sound</div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-icon">🔊</div>
+            <div>
+              <div class="settings-row-label">Sound Effects</div>
+              <div class="settings-row-sub">Pet interactions &amp; notifications</div>
+            </div>
+          </div>
+          <button class="toggle on" id="sfxToggle" onclick="toggleSetting(this, 'sfx')"></button>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-icon">🎶</div>
+            <div>
+              <div class="settings-row-label">Background Music</div>
+              <div class="settings-row-sub">Ambient relaxing tunes</div>
+            </div>
+          </div>
+          <button class="toggle" id="bgmToggle" onclick="toggleSetting(this, 'bgm')"></button>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-icon">🔈</div>
+            <div>
+              <div class="settings-row-label">Volume</div>
+            </div>
+          </div>
+          <input type="range" class="vol-slider" min="0" max="100" value="70" id="volSlider"
+            oninput="document.getElementById('volVal').textContent=this.value+'%'">
+          <span id="volVal" style="font-size:12px;font-weight:700;color:var(--text-muted);min-width:32px">70%</span>
+        </div>
+      </div>
 
-                chatBox.innerHTML += <div class="chat-msg">${reply}</div>;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }, 750);
-        }
+      <!-- Language -->
+      <div class="settings-section">
+        <div class="settings-section-title">🌐 Language</div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-icon">🗣️</div>
+            <div>
+              <div class="settings-row-label">App Language</div>
+              <div class="settings-row-sub">Chat &amp; UI language</div>
+            </div>
+          </div>
+          <select class="settings-select" id="langSelect" onchange="changeLang(this.value)">
+            <option value="en">🇬🇧 English</option>
+            <option value="zh">🇨🇳 中文</option>
+            <option value="ms">🇲🇾 Bahasa Melayu</option>
+            <option value="ja">🇯🇵 日本語</option>
+            <option value="ko">🇰🇷 한국어</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+              <div class="settings-row-icon">🌙</div>
+            <div>
+              <div class="settings-row-label">Dark Mode</div>
+              <div class="settings-row-sub">Easy on the eyes at night</div>
+            </div>
+          </div>
+          <button class="toggle" id="darkToggle" onclick="toggleDark(this)"></button>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-left">
+            <div class="settings-row-icon">🔔</div>
+            <div>
+              <div class="settings-row-label">Notifications</div>
+              <div class="settings-row-sub">Daily pet check-in reminders</div>
+            </div>
+          </div>
+          <button class="toggle on" id="notifToggle" onclick="toggleSetting(this,'notif')"></button>
+        </div>
+      </div>
 
-        // Screen 2: Interaction Engines
-        function logUserMood(moodName) {
-            showToast(Your ${activePet.name} noticed you feel ${moodName}!);
-        }
-function interactWithPet() {
-            const dialogBox = document.getElementById('pet-dialogue');
-            const giftArea = document.getElementById('gift-area');
-            giftArea.innerHTML = ''; // Reset any uncollected assets
-            
-            const actionRoll = Math.random() < 0.5 ? 'mood' : 'gift';
+      <!-- Feedback -->
+      <div class="settings-section">
+        <div class="settings-section-title">💌 Feedback</div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:12px">
+          <div style="font-size:13px;font-weight:700;color:var(--text-muted)">Rate your experience</div>
+          <div class="star-row" id="starRow">
+            <span class="star" onclick="rateStar(1)">⭐</span>
+            <span class="star" onclick="rateStar(2)">⭐</span>
+            <span class="star" onclick="rateStar(3)">⭐</span>
+            <span class="star" onclick="rateStar(4)">⭐</span>
+            <span class="star" onclick="rateStar(5)">⭐</span>
+          </div>
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px">
+          <div style="font-size:13px;font-weight:700;color:var(--text-muted)">Send us your thoughts 💭</div>
+          <textarea class="feedback-area" id="feedbackText" placeholder="What do you love? What can we improve?"></textarea>
+          <button class="feedback-send" onclick="submitFeedback()">✉️ Send Feedback</button>
+        </div>
+      </div>
 
-            if (actionRoll === 'mood') {
-                const randomMoodText = moodStatements[Math.floor(Math.random() * moodStatements.length)];
-                dialogBox.innerText = randomMoodText;
-            } else {
-                dialogBox.innerText = 🌸 Look! I picked a beautiful wildflower just for you!;
-                giftArea.innerHTML = <button class="btn-custom" style="margin-top:10px; animation: bounce 0.5s infinite alternate;" onclick="acceptFlowerGift()">Accept Gift 🎁</button>;
-            }
-        }
+      <div class="version-text">PetPal v1.0.0 · Made with 💜</div>
+    </div>
+  </div>
 
-        function acceptFlowerGift() {
-            document.getElementById('gift-area').innerHTML = '';
-            document.getElementById('pet-dialogue').innerText = "Hehe! I'm glad you liked my present! ❤️";
-            showToast("Flower accepted successfully!");
-        }
+  <!-- ===== BOTTOM NAV ===== -->
+  <nav>
+    <button class="nav-btn active" onclick="switchPage('chat', this)">
+      <span class="nav-icon">💬</span>
+      Chat
+    </button>
+    <button class="nav-btn" onclick="switchPage('pet', this)">
+      <span class="nav-icon">🐾</span>
+      Pet
+    </button>
+    <button class="nav-btn" onclick="switchPage('settings', this)">
+      <span class="nav-icon">⚙️</span>
+      Settings
+    </button>
+  </nav>
+</div>
 
-        // Screen 3: Submission Systems
-        function submitFeedback() {
-            const notes = document.getElementById('feedback-text');
-            if (notes.value.trim() !== "") {
-                showToast("Feedback submitted! Thank you.");
-                notes.value = "";
-            }
-        }
+<div class="toast" id="toast"></div>
 
-        // Utility Systems UI Alerts
-        function showToast(msg) {
-            const alertNode = document.getElementById('app-toast');
-            alertNode.innerText = msg;
-            alertNode.style.display = 'block';
-            setTimeout(() => { alertNode.style.display = 'none'; }, 2000);
-        }
+<script>
+/* ============================================================
+   STATE
+============================================================ */
+let apiKey = localStorage.getItem('gemini_api_key') || '';
+let userMood = null;
+let currentPetType = 'cat';
+let petHappiness = 3, petEnergy = 3, petLove = 3;
+let flowerPending = false;
+let starRating = 0;
+let chatHistory = [];
 
-        // Map system listeners for chat layout keys
-        document.getElementById('chat-input')?.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') sendChatMessage();
-        });
+const MOODS = [
+  { emoji:'😊', name:'Happy' },
+  { emoji:'😢', name:'Sad' },
+  { emoji:'😠', name:'Angry' },
+  { emoji:'😴', name:'Tired' },
+  { emoji:'🤩', name:'Excited' },
+  { emoji:'😰', name:'Anxious' },
+  { emoji:'🥰', name:'Loving' },
+  { emoji:'😌', name:'Calm' },
+];
 
-        // Initialize instance on render completion
-        window.onload = initApp;
-    </script>
+const PET_TYPES = [
+  { id:'cat', label:'🐱 Cat' },
+  { id:'dino', label:'🦕 Dino' },
+  { id:'capybara', label:'🦫 Capybara' },
+  { id:'koala', label:'🐨 Koala' },
+];
+
+const PET_MOODS = [
+  "I'm feeling absolutely paw-some today! 🌟",
+  "A little sleepy today... maybe one more nap? 😴",
+  "I'm SO excited!! Everything is wonderful! 🎉",
+  "Hmm, I think I need more cuddles today 🥺",
+  "I feel like going on an adventure! 🗺️",
+  "Today is a perfect snack day 🍪",
+  "I've been thinking about you all day 💭",
+  "Rainy day vibes... cozy and happy! ☁️",
+  "Feeling bouncy and full of energy! ⚡",
+  "Everything smells like flowers today 🌸",
+];
+
+const FLOWERS = ['🌸','🌺','🌻','🌹','💐','🌼','🪷','🌷'];
+    /* ============================================================
+   NAVIGATION
+============================================================ */
+function switchPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'pet') renderPetPage();
+}
+
+/* ============================================================
+   CHAT PAGE
+============================================================ */
+if (apiKey) document.getElementById('apiKeyInput').value = '••••••••••••••••';
+
+function saveApiKey() {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (!val || val.startsWith('•')) { showToast('Enter a valid API key'); return; }
+  apiKey = val;
+  localStorage.setItem('gemini_api_key', apiKey);
+  document.getElementById('apiKeyInput').value = '••••••••••••••••';
+  showToast('✅ API key saved!');
+  addAIMessage("Hi there! I'm your PetPal AI powered by Gemini 🌟 Ask me anything, or say 'generate an image of [something]' to create images!");
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+}
+
+function scrollChat() {
+  const msgs = document.getElementById('chatMessages');
+  setTimeout(() => msgs.scrollTop = msgs.scrollHeight, 50);
+}
+
+function addUserMessage(text) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.innerHTML = <div class="msg-avatar">😊</div><div class="msg-bubble">${escHtml(text)}</div>;
+  msgs.appendChild(div); scrollChat();
+}
+
+function addAIMessage(text, imgSrc) {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  let inner = <div class="msg-bubble">${formatMd(text)};
+  if (imgSrc) inner += <img src="${imgSrc}" class="msg-img" alt="Generated image">;
+  inner += </div>;
+  div.innerHTML = <div class="msg-avatar">🤖</div>${inner};
+  msgs.appendChild(div); scrollChat();
+}
+
+function showTyping() {
+  const msgs = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg ai'; div.id = 'typingIndicator';
+  div.innerHTML = <div class="msg-avatar">🤖</div><div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>;
+  msgs.appendChild(div); scrollChat();
+}
+
+function hideTyping() {
+  const t = document.getElementById('typingIndicator');
+  if (t) t.remove();
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function formatMd(s) {
+  return escHtml(s)
+    .replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/\n/g,'<br>');
+}
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  if (!apiKey) { showToast('⚠️ Please enter your Gemini API key first'); return; }
+
+  input.value = ''; autoResize(input);
+  addUserMessage(text);
+  chatHistory.push({ role: 'user', parts: [{ text }] });
+
+  // Check for image generation request
+  const imgMatch = text.match(/generate\s+(?:an?\s+)?image\s+of\s+(.+)/i) ||
+                   text.match(/(?:draw|create|make)\s+(?:an?\s+)?image\s+(?:of\s+)?(.+)/i);
+  if (imgMatch) {
+    await generateImage(imgMatch[1]);
+    return;
+  }
+
+  showTyping();
+  document.getElementById('sendBtn').disabled = true;
+
+  try {
+    const systemCtx = "You are PetPal AI, a friendly, warm, and slightly playful assistant for a pet companion app. Keep responses concise and fun. Use occasional emojis naturally.";
+    
+    const messages = chatHistory.map(m => ({
+      role: m.role,
+      parts: m.parts
+    }));
+      const res = await fetch(
+      https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey},
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: systemCtx }] },
+          contents: messages,
+          generationConfig: { maxOutputTokens: 400, temperature: 0.85 }
+        })
+      }
+    );
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Hmm, I had trouble with that!';
+    hideTyping();
+    chatHistory.push({ role: 'model', parts: [{ text: reply }] });
+    addAIMessage(reply);
+  } catch (err) {
+    hideTyping();
+    addAIMessage('⚠️ ' + (err.message.includes('API') ? 'API key error. Please check your key.' : 'Something went wrong. Try again!'));
+  }
+  document.getElementById('sendBtn').disabled = false;
+}
+
+async function generateImage(prompt) {
+  showTyping();
+  document.getElementById('sendBtn').disabled = true;
+
+  try {
+    // Use Gemini's image generation
+    const res = await fetch(
+      https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${apiKey},
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: Create a cute, friendly, cartoon-style illustration of: ${prompt}. Bright colors, adorable style. }] }],
+          generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+        })
+      }
+    );
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    
+    hideTyping();
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    let imgSrc = null, textReply = Here's your image of **${prompt}**! 🎨;
+
+    for (const part of parts) {
+      if (part.inlineData) {
+        imgSrc = data:${part.inlineData.mimeType};base64,${part.inlineData.data};
+      }
+      if (part.text) textReply = part.text;
+    }
+
+    addAIMessage(textReply, imgSrc);
+    chatHistory.push({ role: 'model', parts: [{ text: textReply }] });
+  } catch (err) {
+    hideTyping();
+    addAIMessage('⚠️ Image generation failed. Make sure your API key has image generation access. ' + err.message.slice(0,80));
+  }
+  document.getElementById('sendBtn').disabled = false;
+}
+
+function triggerImageGen() {
+  const input = document.getElementById('chatInput');
+  input.value = 'Generate an image of ';
+  input.focus();
+  input.setSelectionRange(input.value.length, input.value.length);
+  autoResize(input);
+}
+
+// Add welcome message on load
+window.addEventListener('DOMContentLoaded', () => {
+  if (apiKey) {
+    addAIMessage("Welcome back! I'm your PetPal AI 🌟 Ready to chat or generate images for you!");
+  } else {
+    addAIMessage("Hi! I'm PetPal AI 🐾 Enter your Gemini API key above to start chatting and generating images!");
+  }
+  initPetPage();
+});
+
+/* ============================================================
+   PET PAGE
+============================================================ */
+function initPetPage() {
+  // Emoji mood row
+  const row = document.getElementById('emojiRow');
+  MOODS.forEach(m => {
+    const chip = document.createElement('div');
+    chip.className = 'emoji-chip';
+    chip.dataset.mood = m.name;
+    chip.innerHTML = <span>${m.emoji}</span><span>${m.name}</span>;
+    chip.onclick = () => selectMood(chip, m);
+    row.appendChild(chip);
+  });
+
+  // Pet type buttons
+  const typeRow = document.getElementById('petTypeRow');
+  PET_TYPES.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'pet-type-btn' + (p.id === currentPetType ? ' active' : '');
+      btn.textContent = p.label;
+    btn.onclick = () => {
+      currentPetType = p.id;
+      document.querySelectorAll('.pet-type-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderPet();
+      speak("Hi! I'm your " + p.label.split(' ')[1] + " 🐾");
+    };
+    typeRow.appendChild(btn);
+  });
+
+  renderPet();
+  updateStats();
+
+  // Random events
+  setInterval(() => {
+    if (Math.random() < 0.15) randomMoodMessage();
+    if (Math.random() < 0.08) triggerFlower();
+  }, 20000);
+}
+
+function renderPetPage() { updateStats(); }
+
+const PET_SVGS = {
+  cat: 
+    <svg viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- body -->
+      <ellipse cx="65" cy="95" rx="32" ry="24" fill="#c8a0f0"/>
+      <!-- head -->
+      <circle cx="65" cy="60" r="30" fill="#dbb8ff"/>
+      <!-- ears -->
+      <polygon points="40,38 30,15 52,32" fill="#c8a0f0"/>
+      <polygon points="90,38 100,15 78,32" fill="#c8a0f0"/>
+      <polygon points="42,36 34,18 52,32" fill="#ff8fc8"/>
+      <polygon points="88,36 96,18 78,32" fill="#ff8fc8"/>
+      <!-- face -->
+      <ellipse cx="54" cy="58" rx="7" ry="8" fill="white"/>
+      <ellipse cx="76" cy="58" rx="7" ry="8" fill="white"/>
+      <circle cx="55" cy="59" r="4" fill="#3a1e6e"/>
+      <circle cx="77" cy="59" r="4" fill="#3a1e6e"/>
+      <circle cx="57" cy="57" r="1.5" fill="white"/>
+      <circle cx="79" cy="57" r="1.5" fill="white"/>
+      <!-- nose -->
+      <ellipse cx="65" cy="68" rx="3" ry="2" fill="#ff7eb3"/>
+      <!-- mouth -->
+      <path d="M61 71 Q65 75 69 71" stroke="#b07af5" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <!-- whiskers -->
+      <line x1="30" y1="67" x2="55" y2="69" stroke="#b07af5" stroke-width="1" opacity="0.6"/>
+      <line x1="30" y1="72" x2="55" y2="71" stroke="#b07af5" stroke-width="1" opacity="0.6"/>
+      <line x1="75" y1="69" x2="100" y2="67" stroke="#b07af5" stroke-width="1" opacity="0.6"/>
+      <line x1="75" y1="71" x2="100" y2="72" stroke="#b07af5" stroke-width="1" opacity="0.6"/>
+      <!-- tail -->
+      <path d="M97 100 Q118 90 112 78 Q106 66 115 60" stroke="#c8a0f0" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <!-- paws -->
+      <ellipse cx="48" cy="116" rx="10" ry="7" fill="#c8a0f0"/>
+      <ellipse cx="82" cy="116" rx="10" ry="7" fill="#c8a0f0"/>
+      <!-- blush -->
+      <ellipse cx="46" cy="66" rx="7" ry="4" fill="#ff8fc8" opacity="0.35"/>
+      <ellipse cx="84" cy="66" rx="7" ry="4" fill="#ff8fc8" opacity="0.35"/>
+    </svg>,
+
+  dino: `
+    <svg viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- body -->
+      <ellipse cx="65" cy="95" rx="30" ry="22" fill="#7de8a0"/>
+      <!-- neck -->
+      <rect x="57" y="68" width="16" height="22" rx="8" fill="#7de8a0"/>
+      <!-- spikes -->
+      <polygon points="58,68 53,50 63,62" fill="#4ec87a"/>
+      <polygon points="65,65 60,45 70,60" fill="#4ec87a"/>
+      <polygon points="72,68 67,50 77,62" fill="#4ec87a"/>
+      <!-- head -->
+      <ellipse cx="65" cy="52" rx="26" ry="22" fill="#8df0b0"/>
+      <!-- eyes -->
+      <ellipse cx="56" cy="46" rx="6" ry="7" fill="white"/>
+      <ellipse cx="74" cy="46" rx="6" ry="7" fill="white"/>
+      <circle cx="57" cy="47" r="3.5" fill="#2d4a1e"/>
+      <circle cx="75" cy="47" r="3.5" fill="#2d4a1e"/>
+      <circle cx="58" cy="45.5" r="1.2" fill="white"/>
+      <circle cx="76" cy="45.5" r="1.2" fill="white"/>
+      <!-- nostrils -->
+      <circle cx="61" cy="58" r="1.5" fill="#4ec87a"/>
+      <circle cx="69" cy="58" r="1.5" fill="#4ec87a"/>
+      <!-- smile -->
+      <path d="M54 62 Q65 70 76 62" stroke="#4ec87a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- arms -->
+      <ellipse cx="35" cy="92" rx="8" ry="5" fill="#7de8a0" transform="rotate(-30 35 92)"/>
+      <ellipse cx="95" cy="92" rx="8" ry="5" fill="#7de8a0" transform="rotate(30 95 92)"/>
+      <!-- legs -->
+      <rect x="46" y="113" width="14" height="10" rx="5" fill="#7de8a0"/>
+      <rect x="70" y="113" width="14" height="10" rx="5" fill="#7de8a0"/>
+      <!-- blush -->
+      <ellipse cx="46" cy="54" rx="6" ry="3.5" fill="#ff8fc8" opacity="0.35"/>
+      <ellipse cx="84" cy="54" rx="6" ry="3.5" fill="#ff8fc8" opacity="0.35"/>
+    </svg>,
+
+  capybara: 
+    <svg viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- body -->
+      <ellipse cx="65" cy="96" rx="38" ry="25" fill="#c49a6c"/>
+      <!-- head (wide) -->
+      <ellipse cx="65" cy="62" rx="32" ry="26" fill="#d4aa80"/>
+      <!-- ears -->
+      <ellipse cx="38" cy="44" rx="9" ry="7" fill="#c49a6c"/>
+      <ellipse cx="92" cy="44" rx="9" ry="7" fill="#c49a6c"/>
+      <ellipse cx="38" cy="44" rx="5" ry="4" fill="#e8c4a0"/>
+      <ellipse cx="92" cy="44" rx="5" ry="4" fill="#e8c4a0"/>
+      <!-- snout (wide) -->
+      <ellipse cx="65" cy="72" rx="18" ry="10" fill="#c49a6c"/>
+      <!-- nostrils -->
+      <circle cx="59" cy="70" r="2.5" fill="#8b6240"/>
+      <circle cx="71" cy="70" r="2.5" fill="#8b6240"/>
+      <!-- eyes -->
+      <ellipse cx="52" cy="57" rx="6" ry="6" fill="white"/>
+      <ellipse cx="78" cy="57" rx="6" ry="6" fill="white"/>
+      <circle cx="53" cy="58" r="3.5" fill="#3a2010"/>
+      <circle cx="79" cy="58" r="3.5" fill="#3a2010"/>
+      <circle cx="54" cy="56.5" r="1.2" fill="white"/>
+      <circle cx="80" cy="56.5" r="1.2" fill="white"/>
+      <!-- smile -->
+      <path d="M57 77 Q65 83 73 77" stroke="#8b6240" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <!-- legs -->
+      <rect x="33" y="114" width="16" height="10" rx="6" fill="#c49a6c"/>
+      <rect x="53" y="114" width="16" height="10" rx="6" fill="#c49a6c"/>
+      <rect x="73" y="114" width="16" height="10" rx="6" fill="#c49a6c"/>
+      <!-- blush -->
+      <ellipse cx="41" cy="63" rx="7" ry="4" fill="#ff8fc8" opacity="0.3"/>
+      <ellipse cx="89" cy="63" rx="7" ry="4" fill="#ff8fc8" opacity="0.3"/>
+    </svg>,
+
+  koala: 
+    <svg viewBox="0 0 130 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- body -->
+      <ellipse cx="65" cy="97" rx="28" ry="23" fill="#a0a0c0"/>
+      <!-- big fluffy ears -->
+      <circle cx="33" cy="44" r="20" fill="#b0b0d0"/>
+      <circle cx="97" cy="44" r="20" fill="#b0b0d0"/>
+      <circle cx="33" cy="44" r="13" fill="#d8d8ec"/>
+      <circle cx="97" cy="44" r="13" fill="#d8d8ec"/>
+      <!-- head -->
+      <circle cx="65" cy="62" r="30" fill="#b0b0d0"/>
+      <!-- big nose -->
+      <ellipse cx="65" cy="70" rx="13" ry="9" fill="#5a5a7a"/>
+      <ellipse cx="62" cy="68" rx="3" ry="2" fill="#7a7a9a" opacity="0.5"/>
+      <!-- eyes -->
+      <ellipse cx="52" cy="57" rx="7" ry="7.5" fill="white"/>
+      <ellipse cx="78" cy="57" rx="7" ry="7.5" fill="white"/>
+      <circle cx="53" cy="58" r="4" fill="#2a2a4a"/>
+      <circle cx="79" cy="58" r="4" fill="#2a2a4a"/>
+      <circle cx="54.5" cy="56.5" r="1.5" fill="white"/>
+      <circle cx="80.5" cy="56.5" r="1.5" fill="white"/>
+      <!-- smile -->
+      <path d="M58 78 Q65 84 72 78" stroke="#8888aa" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <!-- arms -->
+      <ellipse cx="36" cy="95" rx="9" ry="6" fill="#a0a0c0" transform="rotate(-20 36 95)"/>
+      <ellipse cx="94" cy="95" rx="9" ry="6" fill="#a0a0c0" transform="rotate(20 94 95)"/>
+      <!-- legs -->
+      <ellipse cx="50" cy="117" rx="11" ry="7" fill="#a0a0c0"/>
+      <ellipse cx="80" cy="117" rx="11" ry="7" fill="#a0a0c0"/>
+      <!-- blush -->
+      <ellipse cx="41" cy="64" rx="7" ry="4" fill="#ff8fc8" opacity="0.3"/>
+      <ellipse cx="89" cy="64" rx="7" ry="4" fill="#ff8fc8" opacity="0.3"/>
+    </svg>
+};
+
+function renderPet() {
+  document.getElementById('petSvgContainer').innerHTML =
+    <div class="pet-svg" id="petSvg">${PET_SVGS[currentPetType]}</div>`;
+  // Click on pet
+  document.getElementById('petSvgContainer').onclick = () => petAction('pet');
+}
+    function speak(text) {
+  const el = document.getElementById('speechText');
+  const bubble = document.getElementById('speechBubble');
+  bubble.style.animation = 'none';
+  void bubble.offsetWidth;
+  bubble.style.animation = 'bubbleIn 0.4s cubic-bezier(.17,.67,.41,1.4)';
+  el.textContent = text;
+}
+
+function petAction(action) {
+  const petName = PET_TYPES.find(p => p.id === currentPetType)?.label.split(' ')[1];
+  const anim = document.getElementById('petSvg');
+  if (anim) { anim.classList.add('happy'); setTimeout(()=>anim.classList.remove('happy'),2000); }
+
+  const responses = {
+    pet: [
+      "Purr purr... I love when you do that 💜",
+      "Oh! That feels so nice 🥰",
+      "*snuggles closer* Don't stop!",
+      "You have the best hands for petting! 🐾",
+      "Head bump! I love you! 💕"
+    ],
+    feed: [
+      "YUM! That's delicious! 🍬",
+      "Mmm! My favorite snack ever! 😋",
+      "Can I have more? Please? 👀",
+      "*munches happily* Thank you! 🌟",
+      "So tasty! You always know what I like!"
+    ],
+    play: [
+      "Wheee! I love playing with you! 🎾",
+      "Catch me if you can! 😜",
+      "This is the BEST day ever! 🎉",
+      "Again! Again! Again! ⚡",
+      "You're my favorite playmate!"
+    ],
+    mood: [
+      () => randomMoodMessage()
+    ]
+  };
+
+  if (action === 'mood') { randomMoodMessage(); return; }
+  const arr = responses[action];
+  speak(arr[Math.floor(Math.random() * arr.length)]);
+
+  if (action === 'pet') petLove = Math.min(5, petLove + 1);
+  if (action === 'feed') petEnergy = Math.min(5, petEnergy + 1);
+  if (action === 'play') { petHappiness = Math.min(5, petHappiness + 1); petEnergy = Math.max(1, petEnergy - 1); }
+  updateStats();
+
+  if (userMood) {
+    const moodResponses = {
+      Happy: "You're happy today! That makes me happy too! 🌈",
+      Sad: "Aww, I'll cuddle with you all day if you're sad 🤗",
+      Angry: "Take a deep breath... I'll be right here for you 💜",
+      Tired: "Rest with me! I'm an expert at napping 😴",
+      Excited: "SAME!!! Let's celebrate together!! 🎉",
+      Anxious: "Shhh... everything will be okay. I'm here 🌙",
+      Loving: "I love you so much too!! 💕💕",
+      Calm: "Ah, peaceful... shall we watch clouds together? ☁️",
+    };
+    if (Math.random() < 0.3 && moodResponses[userMood]) {
+      setTimeout(() => speak(moodResponses[userMood]), 3000);
+    }
+  }
+}
+
+function randomMoodMessage() {
+  speak(PET_MOODS[Math.floor(Math.random() * PET_MOODS.length)]);
+}
+
+function triggerFlower() {
+  if (flowerPending) return;
+  flowerPending = true;
+  const flower = FLOWERS[Math.floor(Math.random() * FLOWERS.length)];
+  const giftEl = document.getElementById('flowerGift');
+  giftEl.textContent = flower;
+  giftEl.style.display = 'block';
+  speak("I picked this " + flower + " just for you! Will you accept it? 🌸");
+}
+
+function acceptFlower() {
+  document.getElementById('flowerGift').style.display = 'none';
+  flowerPending = false;
+  petLove = Math.min(5, petLove + 2);
+  updateStats();
+  speak("Yay! I'm SO happy you accepted my gift! 💖");
+  const petSvg = document.getElementById('petSvg');
+  if (petSvg) { petSvg.classList.add('happy'); setTimeout(()=>petSvg.classList.remove('happy'),2000); }
+}
+
+function selectMood(chip, mood) {
+  document.querySelectorAll('.emoji-chip').forEach(c => c.classList.remove('selected'));
+  chip.classList.add('selected');
+  userMood = mood.name;
+  const petName = PET_TYPES.find(p => p.id === currentPetType)?.label.split(' ')[1];
+  const moodMsg = {
+    Happy: You're happy today!  + petName +  does a little dance 💃,
+    Sad: petName +  comes over and nuzzles you gently 🤗,
+    Angry: Deep breaths...  + petName +  brings you a calming flower 🌸,
+    Tired: petName +  pats the comfy spot next to them 😴,
+    Excited: petName +  zooms around in excitement with you! ⚡,
+    Anxious: petName +  sits close and hums softly 🎵,
+    Loving: petName +  gives you the biggest hug! 💕,
+    Calm: Perfect!  + petName +  closes eyes peacefully ☁️,
+  };
+  speak(moodMsg[mood.name] || "I hear you! I'm here with you 💜");
+}
+    const STAT_EMOJIS = {
+  1: { happy:'😔', energy:'💤', love:'🩶' },
+  2: { happy:'😕', energy:'😪', love:'💙' },
+  3: { happy:'😊', energy:'⚡', love:'💜' },
+  4: { happy:'😄', energy:'🌟', love:'💖' },
+  5: { happy:'🤩', energy:'🔥', love:'💗' },
+};
+function updateStats() {
+  document.getElementById('statHappy').textContent = STAT_EMOJIS[petHappiness].happy;
+  document.getElementById('statEnergy').textContent = STAT_EMOJIS[petEnergy].energy;
+  document.getElementById('statLove').textContent = STAT_EMOJIS[petLove].love;
+}
+
+/* ============================================================
+   SETTINGS PAGE
+============================================================ */
+function toggleSetting(btn, key) {
+  btn.classList.toggle('on');
+  const on = btn.classList.contains('on');
+  localStorage.setItem('setting_' + key, on);
+  showToast(key === 'sfx' ? (on ? '🔊 Sound effects on' : '🔇 Sound effects off') :
+            key === 'bgm' ? (on ? '🎶 Music on' : '🎵 Music off') :
+            (on ? '🔔 Notifications on' : '🔕 Notifications off'));
+}
+
+function toggleDark(btn) {
+  btn.classList.toggle('on');
+  const dark = btn.classList.contains('on');
+  if (dark) {
+    document.documentElement.style.setProperty('--bg', '#1a0e2e');
+    document.documentElement.style.setProperty('--surface', '#2a1a4e');
+    document.documentElement.style.setProperty('--surface2', '#1f143a');
+    document.documentElement.style.setProperty('--text', '#e8d8ff');
+    document.documentElement.style.setProperty('--text-muted', '#a080d0');
+    document.documentElement.style.setProperty('--border', '#3a2a6e');
+  } else {
+    document.documentElement.style.setProperty('--bg', '#fdf6ff');
+    document.documentElement.style.setProperty('--surface', '#ffffff');
+    document.documentElement.style.setProperty('--surface2', '#f5eeff');
+    document.documentElement.style.setProperty('--text', '#2d1b4e');
+    document.documentElement.style.setProperty('--text-muted', '#8b6fad');
+    document.documentElement.style.setProperty('--border', '#e8d8ff');
+  }
+  showToast(dark ? '🌙 Dark mode on' : '☀️ Light mode on');
+}
+
+function changeLang(lang) {
+  const names = { en:'English', zh:'中文', ms:'Bahasa Melayu', ja:'日本語', ko:'한국어' };
+  showToast('🌐 Language: ' + names[lang]);
+}
+
+function rateStar(n) {
+  starRating = n;
+  document.querySelectorAll('.star').forEach((s, i) => {
+    s.classList.toggle('lit', i < n);
+  });
+  if (n === 5) showToast('🌟 Thank you! We love you too!');
+  else if (n >= 4) showToast('😊 Thank you for the rating!');
+  else if (n >= 3) showToast('💜 We\'ll work to improve!');
+  else showToast('💙 Thanks for the honest feedback');
+}
+
+function submitFeedback() {
+  const text = document.getElementById('feedbackText').value.trim();
+  if (!text && starRating === 0) { showToast('⚠️ Please rate or write something!'); return; }
+  document.getElementById('feedbackText').value = '';
+  document.querySelectorAll('.star').forEach(s => s.classList.remove('lit'));
+  starRating = 0;
+  showToast('✅ Feedback sent! Thank you! 💖');
+}
+
+/* ============================================================
+   TOAST
+============================================================ */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
 </body>
 </html>
+    
