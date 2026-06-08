@@ -15,9 +15,12 @@ export default async function handler(req) {
       status: 405, headers: { ...cors, 'Content-Type': 'application/json' },
     });
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY
+    || globalThis.ANTHROPIC_API_KEY
+    || '';
+
   if (!apiKey)
-    return new Response(JSON.stringify({ error: 'API key not configured' }), {
+    return new Response(JSON.stringify({ error: 'No API key', debug: Object.keys(process.env) }), {
       status: 500, headers: { ...cors, 'Content-Type': 'application/json' },
     });
 
@@ -39,7 +42,7 @@ export default async function handler(req) {
   });
 
   const data = await response.json();
-  const reply = data.content?.[0]?.text || '';
+  const reply = data.content?.[0]?.text || JSON.stringify(data);
 
   return new Response(JSON.stringify({ reply }), {
     status: 200, headers: { ...cors, 'Content-Type': 'application/json' },
