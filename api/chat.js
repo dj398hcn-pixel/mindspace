@@ -22,7 +22,7 @@ export default async function handler(req) {
 
     const body = await req.json();
     const messages = body.messages || [];
-    const system = body.system || 'You are PetPal AI, a warm and friendly virtual companion.';
+    const system = body.system || 'You are Mental Care AI, a warm and friendly virtual companion.';
 
     const contents = messages.map(function(m) {
       return {
@@ -31,7 +31,7 @@ export default async function handler(req) {
       };
     });
 
-    const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey;
+    const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + apiKey;
 
     const geminiRes = await fetch(url, {
       method: 'POST',
