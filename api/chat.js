@@ -46,7 +46,7 @@ export default async function handler(req) {
     const text = await geminiRes.text();
 
     const data = JSON.parse(text);
-    const reply = data.candidates[0].content.parts[0].text;
+    const reply = JSON.stringify(data);
 
     return new Response(JSON.stringify({ reply: reply }), {
       status: 200,
