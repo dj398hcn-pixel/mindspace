@@ -7,46 +7,59 @@ export default async function handler(req) {
     'Access-Control-Allow-Headers': 'Content-Type',
   };
 
-  if (req.method === 'OPTIONS')
+  if (req.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors });
+  }
 
-  if (req.method !== 'POST')
+  if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405, headers: { ...cors, 'Content-Type': 'application/json' },
+      status: 405,
+      headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
     });
+  }
 
-  const apiKey = process.env.GEMINI_API_KEY || '';
+  const apiKey = process.env.GEMINI_API_KEY;
 
-  if (!apiKey)
+  if (!apiKey) {
     return new Response(JSON.stringify({ error: 'No API key' }), {
-      status: 500, headers: { ...cors, 'Content-Type': 'application/json' },
+      status: 500,
+      headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
     });
+  }
 
-  const { messages, system } = await req.json();
+  const body = await req.json();
+  const messages = body.messages;
+  const system = body.system;
 
-  // Convert messages format for Gemini
-  const contents = messages.map(m => ({
-    role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: m.content }]
-  }));
+  const contents = messages.map(function(m) {
+    return {
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }]
+    };
+  });
+
+  const geminiBody = {
+    system_instruction: {
+      parts: [{ text: system || 'You are PetPal AI, a warm and friendly virtual companion.' }]
+    },
+    contents: contents,
+    generationConfig: { maxOutputTokens: 300 }
+  };
 
   const response = await fetch(
-    https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey},
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system_instruction: { parts: [{ text: system || 'You are PetPal AI, a warm and friendly virtual companion.' }] },
-        contents,
-        generationConfig: { maxOutputTokens: 300 }
-      }),
+      body: JSON.stringify(geminiBody),
     }
   );
 
   const data = await response.json();
-  const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || JSON.stringify(data);
+  const reply = data.candidates[0].content.parts[0].text;
 
-  return new Response(JSON.stringify({ reply }), {
-    status: 200, headers: { ...cors, 'Content-Type': 'application/json' },
+  return new Response(JSON.stringify({ reply: reply }), {
+    status: 200,
+    headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
   });
 }
