@@ -15,34 +15,36 @@ export default async function handler(req) {
       status: 405, headers: { ...cors, 'Content-Type': 'application/json' },
     });
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
-    || globalThis.ANTHROPIC_API_KEY
-    || '';
+  const apiKey = process.env.GEMINI_API_KEY || '';
 
   if (!apiKey)
-    return new Response(JSON.stringify({ error: 'No API key', debug: Object.keys(process.env) }), {
+    return new Response(JSON.stringify({ error: 'No API key' }), {
       status: 500, headers: { ...cors, 'Content-Type': 'application/json' },
     });
 
   const { messages, system } = await req.json();
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 300,
-      system: system || 'You are PetPal AI, a warm and friendly virtual companion.',
-      messages,
-    }),
-  });
+  // Convert messages format for Gemini
+  const contents = messages.map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
+  }));
+
+  const response = await fetch(
+    https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey},
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: system || 'You are PetPal AI, a warm and friendly virtual companion.' }] },
+        contents,
+        generationConfig: { maxOutputTokens: 300 }
+      }),
+    }
+  );
 
   const data = await response.json();
-  const reply = data.content?.[0]?.text || JSON.stringify(data);
+  const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || JSON.stringify(data);
 
   return new Response(JSON.stringify({ reply }), {
     status: 200, headers: { ...cors, 'Content-Type': 'application/json' },
