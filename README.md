@@ -1,4 +1,3 @@
-[petpal-final.html](https://github.com/user-attachments/files/28681537/petpal-final.html)
 <!DOCTYPE html>
 <html lang="en">
 <head>
