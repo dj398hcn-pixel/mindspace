@@ -1,81 +1,61 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
+// api/chat.js — Vercel Serverless Function
+// Proxies requests to Anthropic API so GitHub Pages can use real AI
+// Deploy this on Vercel, set ANTHROPIC_API_KEY in environment variables
 
-dotenv.config();
+export default async function handler(req, res) {
+  // Allow requests from any origin (your GitHub Pages site)
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-const app = express();
-const PORT = process.env.PORT || 3001;
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-// AI Chat Route
-app.post('/api/ai/chat', async (req, res) => {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ error: 'API key not configured' });
+  }
+
+  const { messages, system } = req.body;
+
+  if (!messages || !Array.isArray(messages)) {
+    return res.status(400).json({ error: 'Invalid request body' });
+  }
+
   try {
-    const { message, conversationHistory } = req.body;
-
-    if (!message) {
-      return res.status(400).json({ error: 'Message is required' });
-    }
-
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      return res.status(500).json({ error: 'API key not configured' });
-    }
-
-    // Prepare messages for the API
-    const messages = [
-      {
-        role: 'system',
-        content: 'You are PetPal, a compassionate AI assistant for mental health and wellness. You provide supportive, helpful responses to users.'
-      },
-      ...(conversationHistory || []),
-      { role: 'user', content: message }
-    ];
-
-    // Call OpenAI API
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: 'gpt-4-turbo',
-        messages: messages,
-        temperature: 0.7,
-        max_tokens: 500
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        system: system || 'You are PetPal AI, a warm and friendly virtual companion.',
+        messages: messages
       })
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      return res.status(response.status).json({ error: error.error.message });
+      const err = await response.text();
+      console.error('Anthropic error:', err);
+      return res.status(response.status).json({ error: 'Upstream API error' });
     }
 
     const data = await response.json();
-    const aiMessage = data.choices[0].message.content;
+    const reply = data.content?.[0]?.text || '';
+    return res.status(200).json({ reply });
 
-    res.json({
-      message: aiMessage,
-      timestamp: new Date()
-    });
-  } catch (error) {
-    console.error('AI route error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (err) {
+    console.error('Handler error:', err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
-});
-
-// Health check route
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', service: 'PetPal AI Backend' });
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`🐾 PetPal AI backend running on port ${PORT}`);
-});
-
-export default app;
+}
