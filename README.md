@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet">
 <style> 
 :root{
-  --bg:#fdf6ff;--surface:#fff;--surface2:#f5eeff;
+  --bg:#fdf6ff;--surface:#fff;--surface2:#f5eeff; 
   --accent:#b07af5;--accent2:#ff8fc8;--accent3:#ffd166;
   --text:#2d1b4e;--muted:#8b6fad;--border:#e8d8ff;
   --nav:68px;--r:20px;--shadow:0 4px 24px rgba(176,122,245,.13);
