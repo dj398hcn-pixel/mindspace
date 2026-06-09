@@ -1879,40 +1879,8 @@ function localAIReply(text, lang = 'en') {
   return fallbacks[Math.floor(Math.random() * fallbacks.length)];
 }
 
-/* ─────────────────────────────────────────────
-   HOW TO INTEGRATE INTO PetPal HTML
-───────────────────────────────────────────────
 
-1. Add this script before your closing </body> tag (or as a separate file):
-   <script src="localAI.js"></script>
 
-2. In your send() function, replace the entire try{} block with:
-
-   async function send() {
-     const inp = document.getElementById('ci');
-     const txt = inp.value.trim();
-     if (!txt) return;
-     inp.value = ''; ar(inp);
-     addMsg('user', txt);
-     playSfx('send');
-     hist.push({ role: 'user', content: txt });
-     document.getElementById('sbtn').disabled = true;
-     showTyping();
-
-     // Small delay to simulate "thinking"
-     await new Promise(r => setTimeout(r, 600 + Math.random() * 600));
-
-     const reply = localAIReply(txt, curLang);
-     hideTyping();
-     hist.push({ role: 'assistant', content: reply });
-     if (hist.length > 20) hist = hist.slice(-20);
-     addMsg('ai', reply);
-     document.getElementById('sbtn').disabled = false;
-   }
-
-3. Remove VERCEL_URL and the fetch logic — no longer needed!
-
-───────────────────────────────────────────────*/
 
   
   </script>
@@ -1952,7 +1920,7 @@ function fmt(s){
 // Example: 'https://petpal-backend.vercel.app/api/chat'
 // Leave as empty string '' to use claude.ai built-in proxy
 // ══════════════════════════════════
-const VERCEL_URL = 'https://mindspace-taupe-seven.vercel.app/api/chat';
+const VERCEL_URL = '';
 
 async function send() {
   const inp = document.getElementById('ci');
@@ -2028,9 +1996,7 @@ function acceptFlower(){
   const sv=document.getElementById('psvg');if(sv){sv.classList.add('happy');setTimeout(()=>sv.classList.remove('happy'),2000)}
 }
 
-/* ══════════════════════════════════
-   SETTINGS
-══════════════════════════════════ */
+
 function tog(b,k){
   b.classList.toggle('on');const on=b.classList.contains('on');
   if(k==='sfx'){sfxEnabled=on;toast(on?L().toastSfxOn:L().toastSfxOff);if(on)playSfx('msg');}
