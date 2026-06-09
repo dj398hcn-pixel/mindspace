@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Mental Care ✨</title>
+<title>PetPal ✨</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -154,7 +154,7 @@ nav{position:relative;z-index:100;height:var(--nav);min-height:var(--nav);flex-s
 <!-- ══════════ AUTH SCREEN ══════════ -->
 <div id="auth-screen">
   <div class="auth-logo">🐾</div>
-  <div class="auth-title">Mental Care</div>
+  <div class="auth-title">PetPal</div>
   <div class="auth-sub">Your AI companion, always here for you ✨</div>
   <div class="auth-card">
     <div class="auth-tabs">
@@ -193,7 +193,7 @@ nav{position:relative;z-index:100;height:var(--nav);min-height:var(--nav);flex-s
   <div class="chat-hd">
     <div class="chat-av">🤖</div>
     <div class="chat-hd-info">
-      <h2>Mental Care AI</h2>
+      <h2>PetPal AI</h2>
       <p><span class="odot"></span><span data-t="chatSub">Your friendly companion · always here</span></p>
     </div>
     <div class="chat-user-badge" id="userBadge" onclick="sw('settings')">👤 Guest</div>
@@ -303,7 +303,7 @@ nav{position:relative;z-index:100;height:var(--nav);min-height:var(--nav);flex-s
         <button class="fbs" onclick="subFb()" data-t="fbBtn">✉️ Send Feedback</button>
       </div>
     </div>
-    <div class="vt">Mental Care v1.0.0 · Made with 💜</div>
+    <div class="vt">PetPal v2.0.0 · Made with 💜</div>
   </div>
 </div>
 
